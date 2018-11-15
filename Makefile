@@ -1,4 +1,4 @@
-LIB_NAME ?= libtoken
+LIB_NAME ?= libiso7816
 
 PROJ_FILES = ../../
 LIB_FULL_NAME = $(LIB_NAME).a
