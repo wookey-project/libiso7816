@@ -676,7 +676,7 @@ static int SC_pull_RESP_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp, unsigned
 	 * around some ETUs.
 	 */
 WAIT_AGAIN:
-	if(resp->le == (SHORT_APDU_LE_MAX + 2)){
+	if(resp->le >= (SHORT_APDU_LE_MAX + 2)){
 		/* Overflow ... Return an error */
 		goto err;
 	}
@@ -722,7 +722,7 @@ GET_RESP_BYTES:
 			goto END;
 		}
 		else{
-			if(resp->le == (SHORT_APDU_LE_MAX + 2)){
+			if(resp->le >= (SHORT_APDU_LE_MAX + 2)){
 				/* Overflow ... Return an error */
 				goto err;
 			}
@@ -1069,6 +1069,10 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				}
 			}
 			else{
+				/* Sanity check */
+				if(curr_resp.le > APDU_MAX_BUFF_LEN){
+					goto err;
+				}
 				/* We have an error, copy the last response data */
 				resp->le = curr_resp.le;
 				memcpy(resp->data, curr_resp.data, curr_resp.le);
@@ -1086,6 +1090,10 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 
 	return 0;
 err:
+	/* We have an error, clean up stuff */
+	memset(&curr_apdu, 0, sizeof(curr_apdu));
+	memset(&curr_resp, 0, sizeof(curr_resp));
+	memset(resp, 0, sizeof(SC_APDU_resp));
 	return -1;
 }
 
@@ -1535,7 +1543,7 @@ static int SC_TPDU_T1_send_sblock(uint8_t sblock_type, uint8_t *data, uint8_t si
 }
 
 /* Send APDU in T=1 and get the response 
- * [RB] FIXME: for now, this a a very basic way of handling T=1. Many
+ * [RB] FIXME: for now, this is a basic yet straightforward way of handling T=1. Some
  * error/corner cases are not implemented yet! However, this should work
  * for the basic interactions with cards we need.
  */
@@ -1564,7 +1572,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	/* Cleanup our lower layer */
 	platform_SC_flush();
 
-	/* Modify the global value of current IFSC if it has not benn done yet */
+	/* Modify the global value of current IFSC if it has not been done yet */
 	if(atr->ifsc == 0){
 		/* Is the ATR telling us we can change the IFSC in TAi? */
 		atr->ifsc = 32; /* Default is 32 bytes as specified by the standard */
@@ -1601,7 +1609,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	 * a full byte reception, it is hard to detect the leading edge of the next full byte since
 	 * it is being received. Hence, in order for our CWT to fully work, we instead use the more
 	 * conservative "two bytes detection" and add to the standard duration 14 ETU since our current
-	 * layer will detect the detection only after the byte has been fully receive.
+	 * layer will detect the detection only after the byte has been fully received.
 	 * (14 ETU = 12 ETU for reception + guard time + 2 ETU for conservative value)
 	 */
 	/* CWT = 11 * etu + 2**cwi etu */
@@ -1765,13 +1773,12 @@ RECEIVE_TPDU_AGAIN_CMD:
 		last_received_sequence = (last_received_sequence + 1) % 2;
 		/* Copy the data batch in the response buffer */
 		for(i = 0; i < tpdu_rcv.len; i++){
-			resp->data[received_size++] = tpdu_rcv.data[i];
 			/* Sanity check */
-			if(received_size > (APDU_MAX_BUFF_LEN + 2)){
+			if(received_size >= (APDU_MAX_BUFF_LEN + 2)){
 				/* We have an overflow, this should not happen ... */
 				goto err;
 			}
-
+			resp->data[received_size++] = tpdu_rcv.data[i];
 		}	
 		/* More IBlocks are to be received */
 		if((tpdu_rcv.pcb & PCB_M_MSK) == PCB_M_CHAIN){
@@ -1861,6 +1868,11 @@ RECEIVE_TPDU_AGAIN_RESP:
 
 	return 0;
 err:
+	/* We have an error, clean up stuff */
+	memset(&tpdu_send, 0, sizeof(SC_TPDU));
+	memset(&tpdu_rcv, 0, sizeof(SC_TPDU));
+	memset(resp, 0, sizeof(SC_APDU_resp));
+
 	return -1;
 }
 
