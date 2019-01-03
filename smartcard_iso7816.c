@@ -210,7 +210,7 @@ int SC_get_ATR(SC_ATR *atr){
 	checksum = atr->t0;
 	/* Get the interface bytes */
 	curr_mask = (atr->t0) >> 4;
-	for(i = 0; i < 4; i++){
+	for(i = 0; i < SETUP_LENGTH; i++){
 		if(curr_mask & 0x1){
 		        if(SC_getc_timeout(&(atr->ta[i]), WT_wait_time)){
 		                goto err;
