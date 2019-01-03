@@ -676,6 +676,10 @@ static int SC_pull_RESP_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp, unsigned
 	 * around some ETUs.
 	 */
 WAIT_AGAIN:
+	if(resp->le == (SHORT_APDU_LE_MAX + 2)){
+		/* Overflow ... Return an error */
+		goto err;
+	}
 	if(SC_getc_timeout(&(resp->data[resp->le]), WT_wait_time)){
 		goto err;
 	}
@@ -697,10 +701,6 @@ WAIT_AGAIN:
 			return 2;
 		}
 		else{
-			if(resp->le == (SHORT_APDU_LE_MAX + 2)){
-				/* Overflow ... Return an error */
-				goto err;
-			}
 			/* Receive one byte and got back to wait for a procedure byte, the other bytes should follow ... */
 			ret = SC_getc_timeout(&(resp->data[resp->le]), WT_wait_time);
 			if(ret){
