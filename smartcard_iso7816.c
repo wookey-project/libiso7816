@@ -779,7 +779,9 @@ END:
 	return 0;
 
 err:
-	resp->le = 0;
+	if(resp != NULL){
+		resp->le = 0;
+	}
 	return -1;
 }
 
@@ -1093,7 +1095,9 @@ err:
 	/* We have an error, clean up stuff */
 	memset(&curr_apdu, 0, sizeof(curr_apdu));
 	memset(&curr_resp, 0, sizeof(curr_resp));
-	memset(resp, 0, sizeof(SC_APDU_resp));
+	if(resp != NULL){
+		memset(resp, 0, sizeof(SC_APDU_resp));
+	}
 	return -1;
 }
 
@@ -1871,7 +1875,9 @@ err:
 	/* We have an error, clean up stuff */
 	memset(&tpdu_send, 0, sizeof(SC_TPDU));
 	memset(&tpdu_rcv, 0, sizeof(SC_TPDU));
-	memset(resp, 0, sizeof(SC_APDU_resp));
+	if(resp != NULL){
+		memset(resp, 0, sizeof(SC_APDU_resp));
+	}
 
 	return -1;
 }
