@@ -12,12 +12,11 @@ VERSION = 1
 # use an app-specific build dir
 APP_BUILD_DIR = $(BUILD_DIR)/libs/$(LIB_NAME)
 
+CFLAGS += $(LIBS_CFLAGS)
 CFLAGS += -ffreestanding
 CFLAGS += $(DRIVERS_CFLAGS)
 CFLAGS += -I$(PROJ_FILES)/include/generated -I$(PROJ_FILES) -I$(PROJ_FILES)/libs/std -I$(PROJ_FILES)/kernel/shared -I.
 # dependency on lower iso7816 interface
-CFLAGS += -I$(PROJ_FILES)/drivers/socs/$(SOC)/iso7816/api
-CFLAGS += -I$(PROJ_FILES)/libs/smartcard/api
 CFLAGS += -MMD -MP
 
 LDFLAGS += -fno-builtin -nostdlib -nostartfiles
