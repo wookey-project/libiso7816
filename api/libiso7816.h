@@ -120,7 +120,7 @@ static SC_state SC_current_state __attribute__((used)) = SC_READER_IDLE;
 
 /***** ATR related constants ******/
 /********************************************************/
-/* ATR should appear in the 40000 clock cycles, i.e. ~110 ETU 
+/* ATR should appear in the 40000 clock cycles, i.e. ~110 ETU
  * with 372 clock cycles per ETU.
  */
 #define ATR_ETU_TIMEOUT		110
@@ -197,13 +197,23 @@ static unsigned int BWT_block_wait_time __attribute__((used)) = BWT_DEFAULT; /* 
 #define INS_GET_RESPONSE	0xc0
 #define INS_ENVELOPE		0xc2
 
+typedef enum {
+    SC_7816_MAP_AUTO,
+    SC_7816_MAP_VOLUNTARY
+} sc_iso7816_map_mode_t;
+
+
+
 void SC_iso7816_print_ATR(SC_ATR *atr);
 int SC_iso7816_fsm_init(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotiate_pts, uint8_t do_change_baudrate, uint8_t do_force_protocol, uint32_t do_force_etu);
 int SC_iso7816_send_APDU(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr, uint8_t T_protocol);
-int SC_iso7816_fsm_early_init(void);
+int SC_iso7816_fsm_early_init(sc_iso7816_map_mode_t map_mode);
 void SC_iso7816_smartcard_lost(void);
 uint8_t SC_iso7816_is_smartcard_inserted(void);
 int SC_iso7816_wait_card_timeout(SC_ATR *atr, uint8_t T_protocol);
 void SC_iso7816_register_user_handler_action(void (*action)(void));
+
+int SC_iso7816_fsm_map(void);
+int SC_iso7816_fsm_unmap(void);
 
 #endif /* __SMARTCARD_ISO7816_H__ */

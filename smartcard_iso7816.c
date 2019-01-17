@@ -122,7 +122,7 @@ static int SC_putc_timeout(uint8_t c, uint32_t etu_timeout){
 	if(SC_is_inverse_conv()){
 		c = SC_inverse_conv(c);
 	}
-	
+
 	/* The timeout is in ETU times, which can be converted to sys ticks
          * using the baud rate. The sys ticks are expressed in microseconds.
          */
@@ -164,7 +164,7 @@ static int SC_adapt_clocks(uint32_t etu, uint32_t frequency){
 
 /* Get the ATR from the card */
 int SC_get_ATR(SC_ATR *atr){
-	unsigned int i;	
+	unsigned int i;
 	uint8_t curr_mask, checksum, do_check_checksum = 0;
 
 	if(atr == NULL){
@@ -246,7 +246,7 @@ int SC_get_ATR(SC_ATR *atr){
 		else{
 			break;
 		}
-	}	
+	}
 	/* Get the historical bytes */
 	atr->h_num = atr->t0 & 0x0f;
 	for(i = 0; i < atr->h_num; i++){
@@ -445,7 +445,7 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 			log_printf("[Smartcard] Switching to ETU = %d (Di = %d, Fi = %d), guard time = %d, max_frequency = %d, Protocol T=%d\n", etu_curr, atr->D_i_curr, atr->F_i_curr, extra_guard_time, atr->f_max_curr, *T_protocol);
 			if(SC_adapt_clocks(etu_curr, atr->f_max_curr)){
 				goto err;
-			}		
+			}
 		}
 	}
 
@@ -646,14 +646,14 @@ err:
 	return -1;
 }
 
-/* Get the response of an APDU from the card in T=0. 
+/* Get the response of an APDU from the card in T=0.
  * The response is a "raw" one, and the response fragmentation is handled
  * in our upper T=0 functions layer.
  * pull_type == 0 => we wait for a procedure byte (ACK, NULL byte, SW1)
  * pull_type == 1 => we wait to get data + SW1/SW2 with no possible NULL bytes
  * pull_type == 2 => we wait to get data + SW1/SW2 with a possible NULL byte
- * 
- * wait_all_bytes == 1 => we wait for all the bytes from the card regardless of 
+ *
+ * wait_all_bytes == 1 => we wait for all the bytes from the card regardless of
  * wait_all_bytes == 0 => we stop waiting when we have reached the Le bytes in the current APDU
  */
 static int SC_pull_RESP_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp, unsigned char pull_type, unsigned char wait_all_bytes){
@@ -685,7 +685,7 @@ WAIT_AGAIN:
 	}
 	/* Check the received procedure byte */
 	if(resp->data[resp->le] == 0x60){
-		/* We have received a NULL byte, this is a lose way in T=0 of 
+		/* We have received a NULL byte, this is a lose way in T=0 of
 		 * telling us to wait ...
 		 */
 		goto WAIT_AGAIN;
@@ -711,7 +711,7 @@ WAIT_AGAIN:
 			goto WAIT_AGAIN;
 		}
 	}
-	/* Then, we get the data and SW1/SW2 
+	/* Then, we get the data and SW1/SW2
 	 */
 	resp->le++;
 GET_RESP_BYTES:
@@ -733,7 +733,7 @@ GET_RESP_BYTES:
 				 * NB: the WAIT NULL byte can only be the first one received.
 				 */
 				goto GET_RESP_BYTES;
-			}	
+			}
 			resp->data[resp->le++] = c;
 		}
 		/* Do we wait for unexpected bytes or not? */
@@ -744,7 +744,7 @@ GET_RESP_BYTES:
                                         goto END;
                                 }
                         }
-			/* Check how many bytes we have compared to the expected Le 
+			/* Check how many bytes we have compared to the expected Le
 			 * and early finish if we already have the expected number of bytes.
 			 */
 			if(apdu->send_le != 0){
@@ -799,7 +799,7 @@ static int SC_push_pull_APDU_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp){
 	/* Sanity checks on the lengths */
 	if(apdu->le > SHORT_APDU_LE_MAX){
 		/* Note: apdu->lc is on an uint8_t, so no need to check */
-		/* Return an error: in T=0, 
+		/* Return an error: in T=0,
 		 * extended APDUs are handled at the upper layer level with the
 		 * ENVELOPE command.
 		 */
@@ -908,7 +908,7 @@ GET_PROCEDURE_BYTE:
 	}
 	else if(ret == 0){
 		/* This is an answer from the card */
-		return 0;	
+		return 0;
 	}
 	else{
 		/* Unexpected case, this is an error */
@@ -921,7 +921,7 @@ err:
 	return -1;
 }
 
-/* This primitive sends an APDU in T=0 and handles the request/response fragmentation 
+/* This primitive sends an APDU in T=0 and handles the request/response fragmentation
  * by using ENVELOPE and GET_RESPONSE instructions whenever necessary (extended APDUs,
  * case 4 APDUs, ...).
  */
@@ -938,13 +938,13 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 	platform_SC_flush();
 
 	if(apdu->lc > SHORT_APDU_LC_MAX){
-		/* If we have to send an extended APDU, we have to use the ENVELOPE command 
+		/* If we have to send an extended APDU, we have to use the ENVELOPE command
 		 * and split it.
 		 */
 		unsigned int encapsulated_apdu_len;
 		unsigned int num_t0_apdus;
-		unsigned int i; 
-	
+		unsigned int i;
+
 		/* Sanity checks on our lengths */
 		if((apdu->lc > APDU_MAX_BUFF_LEN) || (apdu->le > APDU_MAX_BUFF_LEN)){
 			goto err;
@@ -1143,7 +1143,7 @@ static uint16_t SC_TPDU_T1_crc(SC_TPDU *tpdu){
 	unsigned int i;
 	uint32_t poly = 0x8408; /* CCIT polynomial x16 + x12 + x5 + 1 */
 	uint32_t crc  = 0xffff;
-	
+
 	if(tpdu == NULL){
 		return 0;
 	}
@@ -1163,12 +1163,12 @@ static uint16_t SC_TPDU_T1_crc(SC_TPDU *tpdu){
 
 /* Compute the checksum of a TPDU */
 static void SC_TPDU_T1_checksum_compute(SC_TPDU *tpdu, SC_ATR *atr){
-	
+
 	if((tpdu == NULL) || (atr == NULL)){
 		return;
 	}
 
-	/* The method used for the checksum depends on ATR byte (LRC or CRC). Default is LRC. 
+	/* The method used for the checksum depends on ATR byte (LRC or CRC). Default is LRC.
 	 * TCi (i>2) contains this information.
 	 */
 	tpdu->edc_type = EDC_TYPE_LRC;
@@ -1179,13 +1179,13 @@ static void SC_TPDU_T1_checksum_compute(SC_TPDU *tpdu, SC_ATR *atr){
 	if(tpdu->edc_type == EDC_TYPE_LRC){
 		/* LRC is the xor of all the bytes of the TPDU */
 		tpdu->edc_lrc = SC_TPDU_T1_lrc(tpdu);
-		return;		
+		return;
 	}
 	else{
 		/* CRC type */
 		tpdu->edc_crc = SC_TPDU_T1_crc(tpdu);
 	}
-	
+
 	return;
 }
 
@@ -1326,7 +1326,7 @@ static int SC_pull_TPDU_T1(SC_TPDU *tpdu, uint32_t resp_timeout){
 	}
 
 	return 0;
-err:	
+err:
 	return -1;
 }
 
@@ -1478,7 +1478,7 @@ static int SC_TPDU_T1_SBLOCK_get_waiting_time(SC_TPDU *tpdu, uint8_t *waiting_ti
 	if(!SC_TPDU_T1_is_SBLOCK(tpdu)){
 		goto err;
 	}
-	/* The waiting time should be encoded in a one byte data field 
+	/* The waiting time should be encoded in a one byte data field
 	 * as a multiple of the BWT (Block Waiting Time).
 	 */
 	if((tpdu->len != 1) || (tpdu->data == NULL)){
@@ -1546,7 +1546,7 @@ static int SC_TPDU_T1_send_sblock(uint8_t sblock_type, uint8_t *data, uint8_t si
 	return 0;
 }
 
-/* Send APDU in T=1 and get the response 
+/* Send APDU in T=1 and get the response
  * [RB] FIXME: for now, this is a basic yet straightforward way of handling T=1. Some
  * error/corner cases are not implemented yet! However, this should work
  * for the basic interactions with cards we need.
@@ -1764,9 +1764,9 @@ RECEIVE_TPDU_AGAIN_CMD:
 			/* Error pulling the response ... */
 			log_printf("[Smartcard T=1] TPDU response reception error 1 ...\n");
 			goto err;
-		}	
+		}
 	}
-	/* If we are here, we have received at least one IBlock. We have to check 
+	/* If we are here, we have received at least one IBlock. We have to check
 	 * if more blocks have to be received.
 	 */
 	/* Reset the BWT factor to 1 */
@@ -1783,7 +1783,7 @@ RECEIVE_TPDU_AGAIN_CMD:
 				goto err;
 			}
 			resp->data[received_size++] = tpdu_rcv.data[i];
-		}	
+		}
 		/* More IBlocks are to be received */
 		if((tpdu_rcv.pcb & PCB_M_MSK) == PCB_M_CHAIN){
 			SC_delay_etu(BGT_block_guard_time); /* Wait for the standardized Block Guard Time (22 ETU by default) */
@@ -1802,7 +1802,7 @@ RECEIVE_TPDU_AGAIN_RESP:
 				SC_TPDU_T1_send_error(PCB_ERR_EDC, SC_TPDU_T1_get_sequence(&tpdu_rcv), atr);
 				goto RECEIVE_TPDU_AGAIN_RESP;
 			}
-			/* If this is not an IBlock, check if this is an SBLOCK and perform the appropriate action. 
+			/* If this is not an IBlock, check if this is an SBLOCK and perform the appropriate action.
 			 * [RB] TODO: handle the *full* resync automaton here instead of aborting ...
 			 */
 			if(!SC_TPDU_T1_is_IBLOCK(&tpdu_rcv)){
@@ -1971,7 +1971,7 @@ int SC_iso7816_wait_card_timeout(SC_ATR *atr __attribute__((unused)), uint8_t T_
 			log_printf("[Smartcard] Unsupported asked protocol T=%d in SC_iso7816_wait_card_timeout\n", T_protocol);
 			goto err;
 	}
-	
+
 	return 0;
 err:
 	return -1;
@@ -1979,9 +1979,9 @@ err:
 
 /*** T=0/T=1 Finite State Machine until Idle command *************/
 
-/* 
+/*
  *  Vcc ____|°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
- * 
+ *
  *  CLK _______|XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
  *
  *  RST ________________________|°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
@@ -2001,7 +2001,7 @@ static int SC_reinit_iso7816(void){
 
         SC_convention = SC_TS_DIRECT_CONVENTION;
 
-        /* (Re)initialize our global variables */       
+        /* (Re)initialize our global variables */
         last_send_sequence = last_received_sequence = 0;
 
         /* (Re)Initialize the hardware blocks */
@@ -2021,15 +2021,48 @@ err:
         return -1;
 }
 
-int SC_iso7816_fsm_early_init(void)
-{
-   uint8_t ret;
-   if((ret = platform_smartcard_early_init())){
-       return ret;
-   }
+static volatile bool map_voluntary;
 
+int SC_iso7816_fsm_early_init(sc_iso7816_map_mode_t map_mode)
+{
+    uint8_t ret;
+    switch (map_mode) {
+        case SC_7816_MAP_AUTO:
+            map_voluntary = false;
+            if((ret = platform_smartcard_early_init(DRV7816_MAP_AUTO))){
+                return ret;
+            }
+            break;
+        case SC_7816_MAP_VOLUNTARY:
+            map_voluntary = true;
+            if((ret = platform_smartcard_early_init(DRV7816_MAP_VOLUNTARY))){
+                return ret;
+            }
+            break;
+        default:
+            printf("invalid map mode\n");
+            break;
+    }
    return 0;
  }
+
+
+int SC_iso7816_fsm_map(void)
+{
+    if (map_voluntary) {
+        return platform_smartcard_map();
+    }
+    return 0;
+
+}
+
+int SC_iso7816_fsm_unmap(void)
+{
+    if (map_voluntary) {
+        return platform_smartcard_unmap();
+    }
+    return 0;
+}
 
 void SC_iso7816_smartcard_lost(void)
 {
