@@ -1333,21 +1333,21 @@ err:
 /*** T=1 helpers for block types and error handling ***/
 static inline int SC_TPDU_T1_is_IBLOCK(SC_TPDU *tpdu){
 	if(tpdu == NULL){
-		return -1;
+		return 0;
 	}
 	return ((tpdu->pcb & PCB_IBLOCK_MSK) == PCB_IBLOCK);
 }
 
 static inline int SC_TPDU_T1_is_RBLOCK(SC_TPDU *tpdu){
 	if(tpdu == NULL){
-		return -1;
+		return 0;
 	}
 	return ((tpdu->pcb & PCB_RBLOCK_MSK) == PCB_RBLOCK);
 }
 
 static inline int SC_TPDU_T1_is_SBLOCK(SC_TPDU *tpdu){
 	if(tpdu == NULL){
-		return -1;
+		return 0;
 	}
 	return ((tpdu->pcb & PCB_SBLOCK_MSK) == PCB_SBLOCK);
 }
@@ -1564,8 +1564,8 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	 * buffers size is 254 bytes maximum imposed by the standard, which is reasonable
 	 * on our STM32F4 platform.
 	 */
-	uint8_t buffer_send[TPDU_T1_DATA_MAXLEN];
-	uint8_t buffer_recv[TPDU_T1_DATA_MAXLEN];
+	uint8_t buffer_send[TPDU_T1_DATA_MAXLEN] = { 0 };
+	uint8_t buffer_recv[TPDU_T1_DATA_MAXLEN] = { 0 };
 	unsigned int encapsulated_apdu_len;
 	unsigned int received_size;
 	uint8_t bwt_factor = 1; /* BWT factor for waiting time extension */
@@ -1625,6 +1625,9 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	BWT_block_wait_time = 11 + (((0x1 << bwi) * 960 * 372 * atr->D_i_curr) / atr->F_i_curr);
 	BWT_block_wait_time = BWT_block_wait_time + 14;
 
+	/* Sanity zeroize */
+	memset(&tpdu_rcv, 0, sizeof(tpdu_rcv));
+	memset(&tpdu_send, 0, sizeof(tpdu_send));	
 	/* NAD is always zero in our case (no multi-slaves) */
 	tpdu_send.nad = 0;
 	/* Send all the IBLOCKS */
