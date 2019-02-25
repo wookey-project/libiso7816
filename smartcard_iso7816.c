@@ -503,13 +503,13 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 		if(asked_ta1){
 			if(do_change_baud_rate){
 				unsigned int i;
-				for(i = 0; i < sizeof(F_i); i++){
+				for(i = 0; i < sizeof(F_i) / sizeof(uint32_t); i++){
 					if(atr->F_i_curr == F_i[i]){
 						new_baud_rate = (i << 4);
 						break;
 					}
 				}
-				for(i = 0; i < sizeof(D_i); i++){
+				for(i = 0; i < sizeof(D_i) / sizeof(uint32_t); i++){
 					if(atr->D_i_curr == D_i[i]){
 						new_baud_rate ^= (i & 0x0f);
 						break;
