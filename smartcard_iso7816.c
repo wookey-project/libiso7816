@@ -18,6 +18,7 @@ static uint32_t SC_get_sc_etu(void){
 /* Fixed delay of a given number of clock cycles */
 static void SC_delay_sc_clock_cycles(uint32_t sc_clock_cycles_timeout){
         uint64_t t, start_tick, curr_tick;
+	uint32_t clock_freq = SC_get_sc_clock_freq();
 
 	if(sc_clock_cycles_timeout == 0){
 		return;
@@ -26,7 +27,11 @@ static void SC_delay_sc_clock_cycles(uint32_t sc_clock_cycles_timeout){
         /* The timeout is in smartcard clock cycles, which can be converted to MCU clock time
          * using a simple conversion. The clock time is expressed in microseconds.
          */
-        t = (sc_clock_cycles_timeout * 1000000ULL) / SC_get_sc_clock_freq();
+	if(clock_freq == 0){
+		/* Avoid division by zero */
+		return;
+	}
+        t = (sc_clock_cycles_timeout * 1000000ULL) / clock_freq;
         start_tick = platform_get_microseconds_ticks();
         /* Now wait */
         curr_tick = start_tick;
@@ -88,11 +93,16 @@ static uint8_t SC_inverse_conv(uint8_t c){
 /* Get a byte with a timeout. Timeout of 0 means forever. */
 static int SC_getc_timeout(uint8_t *c, uint32_t etu_timeout){
         uint64_t t, start_tick, curr_tick;
+	uint32_t clock_freq = SC_get_sc_clock_freq();
 
         /* The timeout is in ETU times, which can be converted to sys ticks
          * using the baud rate. The sys ticks are expressed in microseconds.
          */
-        t = (etu_timeout * SC_get_sc_etu() * 1000000ULL) / SC_get_sc_clock_freq();
+	if(clock_freq == 0){
+		/* Avoid division by zero */
+		return -1;
+	}
+        t = (etu_timeout * SC_get_sc_etu() * 1000000ULL) / clock_freq;
         start_tick = platform_get_microseconds_ticks();
 
         while(platform_SC_getc(c, t, 0)){
@@ -118,6 +128,7 @@ static int SC_getc_timeout(uint8_t *c, uint32_t etu_timeout){
 
 static int SC_putc_timeout(uint8_t c, uint32_t etu_timeout){
         uint64_t t, start_tick, curr_tick;
+	uint32_t clock_freq = SC_get_sc_clock_freq();
 
 	if(SC_is_inverse_conv()){
 		c = SC_inverse_conv(c);
@@ -126,7 +137,11 @@ static int SC_putc_timeout(uint8_t c, uint32_t etu_timeout){
 	/* The timeout is in ETU times, which can be converted to sys ticks
          * using the baud rate. The sys ticks are expressed in microseconds.
          */
-        t = (etu_timeout * SC_get_sc_etu() * 1000000ULL) / SC_get_sc_clock_freq();
+	if(clock_freq == 0){
+		/* Avoid division by zero */
+		return -1;
+	}
+        t = (etu_timeout * SC_get_sc_etu() * 1000000ULL) / clock_freq;
         start_tick = platform_get_microseconds_ticks();
 
         while(platform_SC_putc(c, t, 0)){
@@ -391,7 +406,13 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 
 		/* Is the using forcing a specific ETU? */
 		if(do_force_etu){
-			log_printf("[Smartcard] Current maximum Fi=%d, Di=%d, ETU=%d, user asked for %d ...\n", atr->F_i_curr, atr->D_i_curr, atr->F_i_curr / atr->D_i_curr, do_force_etu);
+			if(atr->D_i_curr != 0){
+				log_printf("[Smartcard] Current maximum Fi=%d, Di=%d, ETU=%d, user asked for %d ...\n", atr->F_i_curr, atr->D_i_curr, atr->F_i_curr / atr->D_i_curr, do_force_etu);
+			}
+			else{
+				log_printf("[Smartcard] Current maximum Fi=%d, Di=%d, user asked for %d ...\n", atr->F_i_curr, atr->D_i_curr, do_force_etu);
+
+			}
 			/* Find a suitable ETU with Fi and the possible values of Di */
 			unsigned int i = ta1 & 0x0f;
 			while(1){
@@ -421,7 +442,7 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 				}
 			}
 			atr->D_i_curr = D_i[i];
-			log_printf("[Smartcard] Trying Fi=%d, Di=%d, ETU=%d as the best choice compared to asked %d\n", atr->F_i_curr, atr->D_i_curr, atr->F_i_curr / atr->D_i_curr, do_force_etu);
+			log_printf("[Smartcard] Trying Fi=%d, Di=%d, ETU=%d as the best choice compared to asked %d\n", atr->F_i_curr, atr->D_i_curr, etu_tmp, do_force_etu);
 		}
 
 		/* If the card is asking for a forbidden value, return */
@@ -1596,6 +1617,10 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu);
 
 	/* How much IBLOCKS do we need? */
+	if(atr->ifsc == 0){
+		/* Avoid division by zero */
+		goto err;
+	}
 	num_iblocks = (encapsulated_apdu_len / atr->ifsc) + 1;
 	if((encapsulated_apdu_len % atr->ifsc == 0) && (encapsulated_apdu_len != 0)){
 		num_iblocks--;
@@ -1622,6 +1647,10 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	/* BWT = 11 * etu + 2**bwi * 960 * 372/f s,
 	 * with 372/f s = (D/F) * 372 new ETU
 	 */
+	if(atr->F_i_curr == 0){
+		/* Avoid division by zero */
+		goto err;
+	}
 	BWT_block_wait_time = 11 + (((0x1 << bwi) * 960 * 372 * atr->D_i_curr) / atr->F_i_curr);
 	BWT_block_wait_time = BWT_block_wait_time + 14;
 
