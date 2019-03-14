@@ -1,4 +1,5 @@
 #include "api/print.h"
+#include "api/string.h"
 #include "api/syscall.h"
 #include "libdrviso7816.h"
 #include "api/libiso7816.h"
@@ -1656,7 +1657,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 
 	/* Sanity zeroize */
 	memset(&tpdu_rcv, 0, sizeof(tpdu_rcv));
-	memset(&tpdu_send, 0, sizeof(tpdu_send));	
+	memset(&tpdu_send, 0, sizeof(tpdu_send));
 	/* NAD is always zero in our case (no multi-slaves) */
 	tpdu_send.nad = 0;
 	/* Send all the IBLOCKS */
