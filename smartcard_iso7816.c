@@ -1,4 +1,5 @@
-#include "api/print.h"
+#include "api/stdio.h"
+#include "api/nostd.h"
 #include "api/string.h"
 #include "api/syscall.h"
 #include "libdrviso7816.h"
