@@ -37,11 +37,13 @@ TODEL_CLEAN += $(OBJ)
 # targets
 TODEL_DISTCLEAN += $(APP_BUILD_DIR)
 
-.PHONY: app
+.PHONY: app doc
 
 default: all
 
 all: $(APP_BUILD_DIR) lib
+
+doc:
 
 show:
 	@echo
