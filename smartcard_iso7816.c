@@ -417,13 +417,13 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 			}
 			/* Find a suitable ETU with Fi and the possible values of Di */
 			unsigned int i = ta1 & 0x0f;
+			uint32_t etu_tmp = 0;
 			while(1){
 				if(i == 0){
 					log_printf("[Smartcard] Error: forcing ETU to %d failed ...\n", do_force_etu);
 					goto err;
 				}
 				if(D_i[i] != 0){
-					uint32_t etu_tmp;
 					if((D_i[i] & 0xffff) == 0){
 						/* Di is not a fraction */
 						etu_tmp = atr->F_i_curr * (D_i[i] >> 16);
