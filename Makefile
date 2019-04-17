@@ -12,8 +12,8 @@ PROJ_FILES = ../../
 LIB_FULL_NAME = $(LIB_NAME).a
 
 # SDK helper Makefiles inclusion
--include $(PROJ_FILES)/Makefile.conf
--include $(PROJ_FILES)/Makefile.gen
+-include $(PROJ_FILES)/m_config.mk
+-include $(PROJ_FILES)/m_generic.mk
 
 # use an app-specific build dir
 APP_BUILD_DIR = $(BUILD_DIR)/libs/$(LIB_NAME)
