@@ -1,7 +1,7 @@
-#include "api/stdio.h"
-#include "api/nostd.h"
-#include "api/string.h"
-#include "api/syscall.h"
+#include "libc/stdio.h"
+#include "libc/nostd.h"
+#include "libc/string.h"
+#include "libc/syscall.h"
 #include "libdrviso7816.h"
 #include "api/libiso7816.h"
 

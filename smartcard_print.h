@@ -2,8 +2,8 @@
 #define __SMARTCARD_PRINT_H__
 
 #include "autoconf.h"
-#include "api/stdio.h"
-#include "api/nostd.h"
+#include "libc/stdio.h"
+#include "libc/nostd.h"
 
 #define SMARTCARD_DEBUG CONFIG_SMARTCARD_DEBUG
 #define MEASURE_TOKEN_PERF
