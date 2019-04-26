@@ -976,7 +976,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		/* Get the number of T=0 APDUs we will have to send with ENVELOPE commands */
 		encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu);
 		num_t0_apdus = (encapsulated_apdu_len / SHORT_APDU_LC_MAX) + 1;
-		if((encapsulated_apdu_len % SHORT_APDU_LC_MAX == 0) && (encapsulated_apdu_len != 0)){
+		if(((encapsulated_apdu_len % SHORT_APDU_LC_MAX) == 0) && (encapsulated_apdu_len != 0)){
 			num_t0_apdus--;
 		}
 		/* Send fragmented T=0 APDUs */
@@ -998,7 +998,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				goto err;
 			}
 			/* Check that the response is 9000 except for the last envelope */
-			if(((curr_resp.sw1 != 0x90) && (curr_resp.sw2 != 0x00)) && (i != num_t0_apdus-1)){
+			if(((curr_resp.sw1 != 0x90) && (curr_resp.sw2 != 0x00)) && (i != (num_t0_apdus-1))){
 				/* This is an error (either the card does not support the
 				 * ENVELOPE instruction, or this is another error). Anyways,
 				 * return the error as is to the upper layer.
@@ -1150,13 +1150,13 @@ static uint8_t SC_TPDU_T1_lrc(SC_TPDU *tpdu){
 #define CRC_BLOCK(in, crc, poly) do {			\
 	unsigned int j;					\
 	uint32_t data;					\
-	data = in;					\
+	data = (in);					\
 	for(j = 0; j < 8; j++){				\
-		if((crc & 0x0001) ^ (data & 0x0001)){	\
-			crc = (crc >> 1) ^ poly;	\
+		if(((crc) & 0x0001) ^ (data & 0x0001)){	\
+			(crc) = ((crc) >> 1) ^ (poly);	\
 		}					\
 		else{					\
-			crc >>= 1;			\
+			(crc) >>= 1;			\
 		}					\
 		data >>= 1;				\
 	}						\
@@ -1179,7 +1179,7 @@ static uint16_t SC_TPDU_T1_crc(SC_TPDU *tpdu){
 	}
 
 	crc = ~crc;
-	crc = (crc << 8) | (crc >> 8 & 0xff);
+	crc = (crc << 8) | ((crc >> 8) & 0xff);
 
 	return (uint16_t)crc;
 }
@@ -1624,7 +1624,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 		goto err;
 	}
 	num_iblocks = (encapsulated_apdu_len / atr->ifsc) + 1;
-	if((encapsulated_apdu_len % atr->ifsc == 0) && (encapsulated_apdu_len != 0)){
+	if(((encapsulated_apdu_len % atr->ifsc) == 0) && (encapsulated_apdu_len != 0)){
 		num_iblocks--;
 	}
 
@@ -1667,7 +1667,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 		tpdu_send.pcb = 0;
 		/* PCB is an IBLOCK */
 		SC_TPDU_T1_set_IBLOCK(&tpdu_send);
-		if(i != num_iblocks-1){
+		if(i != (num_iblocks-1)){
 			/* Blocks are chained except for the last one */
 			tpdu_send.pcb |= PCB_M_CHAIN;
 		}
