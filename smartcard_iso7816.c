@@ -385,6 +385,7 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 	if((atr->t_mask[3] & 0x1) && (do_force_protocol == 0)){
 		td1 = atr->td[0];
 		*T_protocol = td1 & 0x0f;
+		log_printf("[Smartcard] ATR prefered protocol T=%d\n", *T_protocol);
 		if((*T_protocol != 0) && (*T_protocol != 1)){
 			/* We do not support T=15 or protocols other than T=0/T=1 */
 			log_printf("[Smartcard] Asking for unsupported protocol T=%d\n", *T_protocol);
@@ -2039,7 +2040,7 @@ static int SC_reinit_iso7816(void){
         last_send_sequence = last_received_sequence = 0;
 
         /* (Re)Initialize the hardware blocks */
-	platform_smartcard_usart_reinit();
+	platform_smartcard_reinit();
         if(platform_smartcard_init()){
                 goto err;
         }
