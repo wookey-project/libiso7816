@@ -1720,7 +1720,7 @@ RECEIVE_TPDU_AGAIN_CMD:
 				goto err;
 			}
 			/* Check that this is the ACK we are waiting for */
-			if(i != num_iblocks - 1){
+			if(i != (num_iblocks - 1)){
 				/* This is not the last block, we should receive a R type block with a last transmitted I Block sequence + 1 */
 				if(!SC_TPDU_T1_is_RBLOCK(&tpdu_rcv) || !SC_TPDU_T1_is_sequence_ok(&tpdu_rcv, (SC_TPDU_T1_get_sequence(&tpdu_send) + 1) % 2)){
 					/* This is not what we expect */
