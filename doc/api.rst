@@ -25,7 +25,7 @@ The 'SC_iso7816_fsm_early_init' simply initializes the lower levels (it is a mer
 driver that initializes the necessary hardware IPs such as USART and GPIOs).
 
 The 'SC_iso7816_fsm_init' function is the core function that establishes the contact with the smart card. Its purpose is to get the ATR and
-optionnaly negotiate the PSS. The arguments are the following:
+optionally negotiate the PSS. The arguments are the following:
 
   * SC_ATR \*atr: the structure that will receive the ATR from the card
   * uint8_t \*T_protocol: this argument takes as output the negotiated protocol
@@ -75,7 +75,7 @@ The user can also perform a negotiation attempt and then fallback to default: ::
   if the negotiated one fails
  
 
-Primitives to send APDUS
+Primitives to send APDUs
 """""""""""""""""""""""""
 
 The library provides a unique API to send an APDU to a smart card and receive its response: ::
