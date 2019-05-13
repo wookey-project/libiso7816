@@ -155,7 +155,7 @@ Card insertion detection
 """""""""""""""""""""""""
 The following API: ::
 
-  void SC_iso7816_smartcard_lost(void);
+  uint8_t SC_iso7816_is_smartcard_inserted(void);
 
 can be used for polling the smart card presence (returns 0 is card is absent, non zero otherwise).
 
