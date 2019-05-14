@@ -238,7 +238,7 @@ html_show_sphinx = False
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'hashdrvdoc'
+htmlhelp_basename = 'iso7816doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -264,7 +264,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'drvhash.tex', u'Hash driver Documentation',
+    (master_doc, 'iso7816.tex', u'Hash driver Documentation',
      u'ANSSI', 'manual'),
 ]
 
@@ -306,7 +306,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'drvhash', u'Hash driver Documentation',
+    (master_doc, 'iso7816', u'Libiso7816 Documentation',
      [author], 1)
 ]
 
@@ -321,8 +321,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'drvHash', u'Hash driver Documentation',
-     author, 'drvHash', 'One line description of project.',
+    (master_doc, 'iso7816', u'Libiso7816 Documentation',
+     author, 'iso7816', 'One line description of project.',
      'Miscellaneous'),
 ]
 

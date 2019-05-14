@@ -54,6 +54,7 @@ default: all
 all: $(APP_BUILD_DIR) lib
 
 doc:
+	$(Q)$(MAKE) BUILDDIR=../$(APP_BUILD_DIR)/doc  -C doc html latexpdf
 
 show:
 	@echo
