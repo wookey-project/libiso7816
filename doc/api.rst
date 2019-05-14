@@ -42,11 +42,12 @@ This function returns 0 on success, and non zero on error.
 
 A default usage of 'SC_iso7816_fsm_init' is: ::
 
-  uint8_t T;
-  SC_ATR atr;
-  if(SC_iso7816_fsm_init(&atr, &T, 0, 0, 0, 0)){
-    goto err;
-  }
+   #include "libiso7816.h"
+   uint8_t T;
+   SC_ATR atr;
+   if(SC_iso7816_fsm_init(&atr, &T, 0, 0, 0, 0)){
+     goto err;
+   }
 
 This initialization establishes a communication channel with the smart card if present, or waits its presence if not,
 and does not negotiate anything. The ETU stays at the default value of 372 ETU (default value as defined by the standard)
@@ -54,16 +55,18 @@ and the protocol is the preferred one provided by the card ATR (or T=0 as standa
 
 A more advanced usage can be: ::
 
- uint8_t T;
- SC_ATR atr;
- if(SC_iso7816_fsm_init(&atr, &T, 1, 1, 2, 64)){
-   goto err;
- }
+  #include "libiso7816.h"
+  uint8_t T;
+  SC_ATR atr;
+  if(SC_iso7816_fsm_init(&atr, &T, 1, 1, 2, 64)){
+    goto err;
+  }
 
 This call asks for a PSS negotiation, asks for a baud rate change, forces the T=1 protocol and asks for a 64 ETU value.
 
 The user can also perform a negotiation attempt and then fallback to default: ::
 
+  #include "libiso7816.h"
   uint8_t T;
   SC_ATR atr;
   if(SC_iso7816_fsm_init(&atr, &T, 1, 1, 2, 64)){
@@ -76,7 +79,17 @@ The user can also perform a negotiation attempt and then fallback to default: ::
   Forcing elements such as the protocol or the ETU heavily depends on the smart card: some values and/or some smart cards
   are not compatible or supported. This is why it is recommended to fallback to a non negotitated 'SC_iso7816_fsm_init'
   if the negotiated one fails
+
+When a card communication must be reinitialized/reset, it is advised to wait for some timeouts using the following API: ::
+
+  int SC_iso7816_wait_card_timeout(SC_ATR *atr, uint8_t T_protocol);
+
+
+Finally, two APIs are used to explicitly ask the lower level driver to map or unmap the smart card device from the
+task's memory space: ::
  
+  int SC_iso7816_fsm_map(void);
+  int SC_iso7816_fsm_unmap(void);
 
 Primitives to send APDUs
 """""""""""""""""""""""""
@@ -125,6 +138,7 @@ The response has the following structure: ::
 
 Sending an APDU and getting back a response is as simple as: ::
   
+  #include "libiso7816.h"
   /* Initialize a communication with the card */
   uint8_t T;
   SC_ATR atr;
@@ -156,6 +170,7 @@ We have straightforward API for pretty printing on the debug console the ATR: ::
 
 Card insertion detection
 """""""""""""""""""""""""
+
 The following API: ::
 
   uint8_t SC_iso7816_is_smartcard_inserted(void);
@@ -165,3 +180,12 @@ can be used for polling the smart card presence (returns 0 is card is absent, no
 For asynchronous detection, a callback registration mechanism is also offered through: ::
 
   void SC_iso7816_register_user_handler_action(void (*action)(void));
+
+Finally, there is an API to call the lower layers of the libraries/drivers stack when
+a smart card is detected as lost: ::
+
+  void SC_iso7816_smartcard_lost(void)
+
+this function helps the hardware layers to reinitialize and flush elements, and
+eventually notify other drivers. It should be called when the library indeed detects
+a smart card loss.
