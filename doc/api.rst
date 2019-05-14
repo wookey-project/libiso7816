@@ -1,6 +1,9 @@
 About the ISO7816 library API
 ----------------------------
 
+.. highlight:: c
+
+
 The API exposed by the library is quite simple and mainly exposes:
 
   * Initialization functions to configure a smart card connection

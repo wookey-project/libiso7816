@@ -1,6 +1,9 @@
 The ISO7816 library
 ===================
 
+.. highlight:: c
+
+
 This library is an implementation of the ISO7816-3 standard to
 communicate with contact smart cards.
 
