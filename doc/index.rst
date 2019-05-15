@@ -1,8 +1,11 @@
-The ISO7816 library
-===================
+.. _lib_iso7816:
 
 .. highlight:: c
 
+The ISO7816 library
+===================
+
+.. contents::
 
 This library is an implementation of the ISO7816-3 standard to
 communicate with contact smart cards.
@@ -16,11 +19,5 @@ This library implements the T=0 and T=1 protocols, ATR (Answer To
 Reset) parsing and the PSS/PTS negotiation. It offers high level
 functions to send APDUs to and receive Responses from a smart card.
 
-.. toctree::
-   :caption: Table of Contents
-   :name: mastertoc
-   :maxdepth: 2
-
-   The ISO7816 library API <api>
-   FAQ <faq>
-
+.. include:: api.rst
+.. include:: faq.rst

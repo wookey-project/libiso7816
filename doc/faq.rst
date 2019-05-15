@@ -1,5 +1,5 @@
-ISO7816 library FAQ
--------------------
+FAQ
+---
 
 Is the ISO7816 library self-contained?
 """"""""""""""""""""""""""""""""""""""

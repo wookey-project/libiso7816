@@ -1,5 +1,5 @@
-About the ISO7816 library API
------------------------------
+API
+---
 
 .. highlight:: c
 
