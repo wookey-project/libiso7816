@@ -25,25 +25,23 @@ The initialization functions are the following: ::
   int SC_iso7816_fsm_early_init(sc_iso7816_map_mode_t map_mode);
   int SC_iso7816_fsm_init(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotiate_pts, uint8_t do_change_baudrate, uint8_t do_force_protocol, uint32_t do_force_etu);
 
-The 'SC_iso7816_fsm_early_init' simply initializes the lower levels (it is a mere call to the low level ISO7816
+The ``SC_iso7816_fsm_early_init`` simply initializes the lower levels (it is a mere call to the low level ISO7816
 driver that initializes the necessary hardware IPs such as USART and GPIOs).
 
-The 'SC_iso7816_fsm_init' function is the core function that establishes the contact with the smart card. Its purpose is to get the ATR and
+The ``SC_iso7816_fsm_init`` function is the core function that establishes the contact with the smart card. Its purpose is to get the ATR and
 optionally negotiate the PSS. The arguments are the following:
 
 
-  * SC_ATR \*atr: the structure that will receive the ATR from the card
-  * uint8_t \*T_protocol: this argument takes as output the negotiated protocol
-  * uint8_t do_force_protocol: does the user want to force the protocol. A value of 0 means no protocol is forced,
-  a value of 1 means T=0 is forced, a value of 2 means T=1 is forced
-  * uint8_t do_negotiate_pts: effectively performs the PTS protocol negotiation if set to non zero
-  * uint8_t do_change_baudrate: effectively modifies the baudrate with the card if set to non zero
-  * uint32_t do_force_etu: forces a target ETU if set to non zero. If the provided ETU is not achievable,
-  we use a 'best fit' algorithm to get the closest ETU lower than the one asked by the user
+  * ``SC_ATR *atr``: the structure that will receive the ATR from the card
+  * ``uint8_t *T_protocol``: this argument takes as output the negotiated protocol
+  * ``uint8_t do_force_protocol``: does the user want to force the protocol. A value of 0 means no protocol is forced, a value of 1 means T=0 is forced, a value of 2 means T=1 is forced
+  * ``uint8_t do_negotiate_pts``: effectively performs the PTS protocol negotiation if set to non zero
+  * ``uint8_t do_change_baudrate``: effectively modifies the baudrate with the card if set to non zero
+  * ``uint32_t do_force_etu``: forces a target ETU if set to non zero. If the provided ETU is not achievable, we use a **best fit** algorithm to get the closest ETU lower than the one asked by the user
 
 This function returns 0 on success, and non zero on error.
 
-A default usage of 'SC_iso7816_fsm_init' is: ::
+A default usage of ``SC_iso7816_fsm_init`` is: ::
 
    #include "libiso7816.h"
    uint8_t T;
@@ -80,7 +78,7 @@ The user can also perform a negotiation attempt and then fallback to default: ::
 
 .. note::
   Forcing elements such as the protocol or the ETU heavily depends on the smart card: some values and/or some smart cards
-  are not compatible or supported. This is why it is recommended to fallback to a non negotitated 'SC_iso7816_fsm_init'
+  are not compatible or supported. This is why it is recommended to fallback to a non negotitated ``SC_iso7816_fsm_init``
   if the negotiated one fails
 
 When a card communication must be reinitialized/reset, it is advised to wait for some timeouts using the following API: ::
@@ -89,7 +87,7 @@ When a card communication must be reinitialized/reset, it is advised to wait for
 
 
 Finally, two APIs are used to explicitly ask the lower level driver to map or unmap the smart card device from the
-task's memory space: ::
+task``s memory space: ::
  
   int SC_iso7816_fsm_map(void);
   int SC_iso7816_fsm_unmap(void);
@@ -101,14 +99,14 @@ The library provides a unique API to send an APDU to a smart card and receive it
 
   int SC_iso7816_send_APDU(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr, uint8_t T_protocol);
 
-The 'apdu' argument is a pointer to an input APDU structure, the 'resp' response is a pointer to a
-response structure that will be filled by the function, the 'atr' structure is a pointer to an
-ATR that has been obtained in the initialization phase with 'SC_iso7816_fsm_init'.
-The library automatically handles the physical layer depending on the asked 'T_protocol' argument
+The ``apdu`` argument is a pointer to an input APDU structure, the ``resp`` response is a pointer to a
+response structure that will be filled by the function, the ``atr`` structure is a pointer to an
+ATR that has been obtained in the initialization phase with ``SC_iso7816_fsm_init``.
+The library automatically handles the physical layer depending on the asked ``T_protocol`` argument
 (T=0 or T=1).
 
 .. warning::
-  The user can force any protocol when calling 'SC_iso7816_send_APDU'. However, consistency should be
+  The user can force any protocol when calling ``SC_iso7816_send_APDU``. However, consistency should be
   observed between the protocol negotiated during the initialization phase and the one used when
   sending APDUs!
 
