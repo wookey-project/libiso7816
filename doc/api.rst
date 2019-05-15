@@ -1,5 +1,5 @@
 About the ISO7816 library API
-----------------------------
+-----------------------------
 
 .. highlight:: c
 
@@ -93,7 +93,7 @@ task``s memory space: ::
   int SC_iso7816_fsm_unmap(void);
 
 Primitives to send APDUs
-"""""""""""""""""""""""""
+""""""""""""""""""""""""
 
 The library provides a unique API to send an APDU to a smart card and receive its response: ::
 
@@ -162,7 +162,7 @@ Sending an APDU and getting back a response is as simple as: ::
   /* If there is no error, resp is filled with the card response! */
 
 Pretty printing
-""""""""""""""""
+"""""""""""""""
 
 We have straightforward API for pretty printing on the debug console the ATR: ::
 
@@ -170,7 +170,7 @@ We have straightforward API for pretty printing on the debug console the ATR: ::
   
 
 Card insertion detection
-"""""""""""""""""""""""""
+""""""""""""""""""""""""
 
 The following API: ::
 
