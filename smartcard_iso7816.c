@@ -517,12 +517,12 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 			goto err;
 		}
 		pck ^= 0xff;
-		/* Send PTS0 telling that we will apply new Fi/Di (PTS1) and new guard time (PTS2) */
-		if(SC_putc_timeout((asked_ta1 << 4) | (asked_tc1 << 5) | (*T_protocol), WT_wait_time)){
+		/* Send PTS0 telling that we will apply new Fi/Di (PTS1) */
+		if(SC_putc_timeout((asked_ta1 << 4) | (*T_protocol), WT_wait_time)){
 			log_printf("[Smartcard] PSS/PTS error (byte PTS0)\n");
 			goto err;
 		}
-		pck ^= (asked_ta1 << 4) | (asked_tc1 << 5) | (*T_protocol);
+		pck ^= (asked_ta1 << 4) | (*T_protocol);
 		/* Send PTS1 if necessary */
 		if(asked_ta1){
 			if(do_change_baud_rate){
@@ -553,14 +553,6 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 				pck ^= default_ta1;
 			}
 		}
-		/* Send PTS2 if necessary */
-		if(asked_tc1){
-			if(SC_putc_timeout(atr->tc[0], WT_wait_time)){
-				log_printf("[Smartcard] PSS/PTS error (byte PTS2)\n");
-				goto err;
-			}
-			pck ^= atr->tc[0];
-		}
 		/* Send the checksum */
 		if(SC_putc_timeout(pck, WT_wait_time)){
 			log_printf("[Smartcard] PSS/PTS error (byte PTS checksum)\n");
@@ -581,7 +573,7 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 			log_printf("[Smartcard] PSS/PTS error (PTS0 ACK error in receive)\n");
 			goto err;
 		}
-		if(c != ((asked_ta1 << 4) | (asked_tc1 << 5) | (*T_protocol))){
+		if(c != ((asked_ta1 << 4) | (*T_protocol))){
 			log_printf("[Smartcard] PSS/PTS error (PTS0 ACK error, values differ)\n");
 			goto err;
 		}
@@ -602,17 +594,6 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 					log_printf("[Smartcard] PSS/PTS error (PTS1 ACK error, values differ)\n");
 					goto err;
 				}
-			}
-		}
-		/* Optionally check for PTS2 */
-		if(asked_tc1){
-			if(SC_getc_timeout(&c, WT_wait_time)){
-				log_printf("[Smartcard] PSS/PTS error (PTS2 ACK error in receive)\n");
-				goto err;
-			}
-			if(c != atr->tc[0]){
-				log_printf("[Smartcard] PSS/PTS error (PTS2 ACK error, values differ)\n");
-				goto err;
 			}
 		}
 		/* Check for the PCK checksum */
@@ -1046,19 +1027,19 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
 			goto err;
 		}
-		/* Handle the case 4 APDU using the GET_RESPONSE method */
-		if((apdu->send_le != 0) && (apdu->lc != 0)){
-			/* See page 36 in  ISO7816-3:2006 for the different cases */
-			if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)){
-				case4_getresponse = 1;
-				curr_resp.sw2 = apdu->le;
-			}
-			if(curr_resp.sw1 == 0x61){
-				case4_getresponse = 1;
-				/* Keep the SW2 as next Le to ask in the GET_RESPONSE */
-			}
-			/* Else: map TPDU response without any change */
+	}
+	/* Handle the case 4 APDU using the GET_RESPONSE method */
+	if((apdu->send_le != 0) && (apdu->lc != 0)){
+		/* See page 36 in  ISO7816-3:2006 for the different cases */
+		if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)){
+			case4_getresponse = 1;
+			curr_resp.sw2 = apdu->le;
 		}
+		if(curr_resp.sw1 == 0x61){
+			case4_getresponse = 1;
+			/* Keep the SW2 as next Le to ask in the GET_RESPONSE */
+		}
+		/* Else: map TPDU response without any change */
 	}
 	/* Get the response, possibly split across multiple responses */
 	if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && (apdu->le > SHORT_APDU_LE_MAX)) || (case4_getresponse == 1)){
