@@ -1274,9 +1274,6 @@ err:
 	return -1;
 }
 
-extern volatile unsigned int received_SC_bytes_start;
-extern volatile unsigned int received_SC_bytes_end;
-
 /* Pull a TPDU from the line */
 static int SC_pull_TPDU_T1(SC_TPDU *tpdu, uint32_t resp_timeout){
 	unsigned int i;
