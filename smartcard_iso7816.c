@@ -473,35 +473,33 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 		}
 	}
 
-	if(do_negotiate_pts || do_change_baud_rate){
-		/* Adapt the Guard Time per TC1 if necessary */
-		if(atr->t_mask[2] & 0x1){
-			/* We have a TC1 representing the prefered guard time */
-			extra_guard_time = atr->tc[0];
-			/* Handle special value 0xff */
-			if(extra_guard_time == 0xff){
-				if(*T_protocol == 0){
-					extra_guard_time = 0;
-				}
-				else if(*T_protocol == 1){
-					/* TC1 = 0xff means that we must reduce our standard 2 ETU guard time
-					 * to 1 ETU for 'agressive' performance mode. Our underlying physical layer
-					 * might not handle such a parameter, hence for now we return an error.
-					 */
-					/* [RB] TODO: specify a new 'platform' specific call to handle guard time of 1 ETU on
-					 * platforms that handle it, or return an error on platforms that don't.
-					 */
-					log_printf("[Smartcard] PSS/PTS error: TC1=0xff for T=1 means unsupported ETU=1 ...\n");
-					goto err;
-				}
-				else{
-					goto err;
-				}
+	/* Adapt the Guard Time per TC1 if necessary */
+	if(atr->t_mask[2] & 0x1){
+		/* We have a TC1 representing the prefered guard time */
+		extra_guard_time = atr->tc[0];
+		/* Handle special value 0xff */
+		if(extra_guard_time == 0xff){
+			if(*T_protocol == 0){
+				extra_guard_time = 0;
 			}
-			asked_tc1 = 1;
-			/* Add the extra guard time to our CGT */
-			CGT_character_guard_time += extra_guard_time;
+			else if(*T_protocol == 1){
+				/* TC1 = 0xff means that we must reduce our standard 2 ETU guard time
+				 * to 1 ETU for 'agressive' performance mode. Our underlying physical layer
+				 * might not handle such a parameter, hence for now we return an error.
+				 */
+                                if(platform_smartcard_set_1ETU_guardtime()){
+                                        log_printf("[Smartcard] PSS/PTS error: TC1=0xff for T=1 means unsupported ETU=1 ...\n");
+                                        goto err;
+                                }
+				extra_guard_time = 0;
+			}
+			else{
+				goto err;
+			}
 		}
+		asked_tc1 = 1;
+		/* Add the extra guard time to our CGT */
+		CGT_character_guard_time += extra_guard_time;
 	}
 
 	if(do_negotiate_pts){
