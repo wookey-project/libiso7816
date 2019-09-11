@@ -610,8 +610,12 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 		/* Adapt the Work Waiting Time for T=0 */
 		uint8_t wi = 10; /* default value */
 		if(atr->t_mask[2] & (0x1 << 1)){
-			/* Handle the specific T=0 ATR TC2 byte here, specifying the Work Waiting Time */
-			wi = atr->tc[1] & 0x0f;
+			/* Handle the specific T=0 ATR TC2 byte here, specifying the Work Waiting Time.
+			 * NOTE: TC2 = 0x00 is reserved for future use, so we do not update wi in this case.
+			 */
+			if(atr->tc[1] != 0){
+				wi = atr->tc[1] & 0x0f;
+			}
 		}
 		/* Work Waiting Time = 960 x D x WI */
 		WT_wait_time = 960 * atr->D_i_curr * wi;
@@ -854,14 +858,14 @@ static int SC_push_pull_APDU_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp){
         else{
                 /* Case 1 APDU or case 2? */
                 if(apdu->send_le){
-                        /* We send a 0 as P3 in a case 1 APDU */
+                        /* Case 2 APDU: send Le in one byte */
                         if(SC_putc_timeout((apdu->le) & 0xff, WT_wait_time)){
                                 goto err;
                         }
                 }
                 else{
-                        /* Send Le in one byte */
-                        if(SC_putc_timeout((apdu->le) & 0xff, WT_wait_time)){
+                        /* We send a 0 as P3 in a case 1 APDU */
+                        if(SC_putc_timeout(0x00, WT_wait_time)){
                                 goto err;
                         }
                 }
