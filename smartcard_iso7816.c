@@ -614,7 +614,7 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 			 * NOTE: TC2 = 0x00 is reserved for future use, so we do not update wi in this case.
 			 */
 			if(atr->tc[1] != 0){
-				wi = atr->tc[1] & 0x0f;
+				wi = atr->tc[1];
 			}
 		}
 		/* Work Waiting Time = 960 x D x WI */
