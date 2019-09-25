@@ -958,7 +958,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		}
 
 		/* Get the number of T=0 APDUs we will have to send with ENVELOPE commands */
-		encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu);
+		encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu, NULL, NULL);
 		num_t0_apdus = (encapsulated_apdu_len / SHORT_APDU_LC_MAX) + 1;
 		if(((encapsulated_apdu_len % SHORT_APDU_LC_MAX) == 0) && (encapsulated_apdu_len != 0)){
 			num_t0_apdus--;
@@ -1597,7 +1597,7 @@ static int SC_send_APDU_T1(SC_APDU_cmd *apdu, SC_APDU_resp *resp, SC_ATR *atr){
 	}
 
 	/* Compute the length we will have to send */
-	encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu);
+	encapsulated_apdu_len = SC_APDU_get_encapsulated_apdu_size(apdu, NULL, NULL);
 
 	/* How much IBLOCKS do we need? */
 	if(atr->ifsc == 0){
@@ -1743,7 +1743,6 @@ RECEIVE_TPDU_AGAIN_CMD:
 							goto RECEIVE_TPDU_AGAIN_CMD;
 						}
 						if(SC_TPDU_T1_SBLOCK_get_type(&tpdu_rcv) == SBLOCK_CHANGE_IFS_REQ){
-							/* FIXME: we can handle this case only when the new IFSC is >= Old IFSC */
 							/* Get the new IFSC */
 							uint8_t new_ifsc;
 							if(SC_TPDU_T1_SBLOCK_get_new_ifs(&tpdu_rcv, &new_ifsc)){
@@ -1753,16 +1752,16 @@ RECEIVE_TPDU_AGAIN_CMD:
 								log_printf("[Smartcard T=1] Bad value for IFSC asked with SBLOCK_CHANGE_IFS_REQ = %d\n", new_ifsc);
 								goto err;
 							}
-							if(atr->ifsc >= new_ifsc){
-								/* Record the new current IFSC */
+							else{
+								/* Record the new current IFSC in our ATR context: this will be actibe
+								 * from now on for the next transactions.
+								 */
 								atr->ifsc = new_ifsc;
 								/* Acknowledge the new IFSC */
 								SC_delay_etu(BGT_block_guard_time); /* Wait for the standardized Block Guard Time (22 ETU by default) */
 								SC_TPDU_T1_send_sblock(SBLOCK_CHANGE_IFS_RESP, tpdu_rcv.data, tpdu_rcv.len, atr);
-							}
-							else{
-								log_printf("[Smartcard T=1] SBLOCK received from card of type SBLOCK_CHANGE_IFS_REQ with IFS %d > old IFS %d, this not supported yet!\n", new_ifsc, atr->ifsc);
-								goto err;
+								/* Go back to waiting the IBlock */
+								goto RECEIVE_TPDU_AGAIN_CMD;
 							}
 						}
 						/* Else, fallback to error since SBLOCKS are not fully implemented */
@@ -2055,7 +2054,7 @@ int SC_iso7816_fsm_early_init(sc_iso7816_map_mode_t map_mode)
             }
             break;
         default:
-            printf("invalid map mode\n");
+            log_printf("invalid map mode\n");
             break;
     }
    return 0;
