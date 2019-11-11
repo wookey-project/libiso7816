@@ -92,6 +92,23 @@ static uint8_t SC_inverse_conv(uint8_t c){
 	return res;
 }
 
+
+/* Wait a delay when switching direction in order to respect the EMV co Book1
+ * specification.
+ * "For the ICC or terminal, the minimum interval between the leading edges of the
+ * start bits of the last character received and the first character sent in the
+ * opposite direction shall be 16 etus."
+ * 
+ * We wait 4 ETUs since 12 ETUs has been spent receiving the last character received.
+ */
+static inline uint32_t SC_get_delay_EMV(void){
+	return 4;
+}
+static inline void SC_delay_EMV(void){
+	SC_delay_etu(SC_get_delay_EMV());
+	return;
+}
+
 /* Get a byte with a timeout. Timeout of 0 means forever. */
 static int SC_getc_timeout(uint8_t *c, uint32_t etu_timeout){
         uint64_t t, start_tick, curr_tick;
@@ -508,6 +525,10 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 		/* Default TA1 in case where we do not want to neogtiate the baud rate */
 		uint8_t default_ta1 = 0x11;
 		/****** Send the PTS to the card ******/
+		/* Wait in order to respect the 16 ETU guard time
+		 * specified by the EMV co specifications when switching direction
+		 */
+		SC_delay_EMV();
 		pck = 0;
 		/* Send PTSS */
 		if(SC_putc_timeout(0xff, WT_wait_time)){
@@ -825,11 +846,19 @@ static int SC_push_pull_APDU_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp){
 	/* Initialize our response length */
 	resp->le = 0;
 
-	/* See ISO7816-3:2006 10.2:
-	 * When using D = 64, the interface device shall ensure a delay of at least 16 etu between the leading edge of
-	 * the last received character and the leading edge of the character transmitted for initiating a command.
-	 */
-	SC_delay_etu(GT_receive_send_interval_etu);
+	if(GT_receive_send_interval_etu < SC_get_delay_EMV()){
+		/* Wait in order to respect the 16 ETU guard time
+		 * specified by the EMV co specifications when switching direction
+		 */
+		SC_delay_EMV();
+	}
+	else{
+		/* See ISO7816-3:2006 10.2:
+		 * When using D = 64, the interface device shall ensure a delay of at least 16 etu between the leading edge of
+		 * the last received character and the leading edge of the character transmitted for initiating a command.
+		 */
+		SC_delay_etu(GT_receive_send_interval_etu);
+	}
 
 	/* Push the header */
 	/* Send the CLA */
@@ -879,6 +908,10 @@ GET_PROCEDURE_BYTE:
 	}
 	else if((ret == 1) || (ret == 2)){
 		if((ret == 2) && (curr_send_byte < apdu->lc)){
+			/* Wait in order to respect the 16 ETU guard time
+			 * specified by the EMV co specifications when switching direction
+			 */
+			SC_delay_EMV();
 			/* Send only one byte and go to waiting a procedure byte */
 			if(SC_putc_timeout(apdu->data[curr_send_byte], WT_wait_time)){
 				goto err;
@@ -889,6 +922,10 @@ GET_PROCEDURE_BYTE:
 		if((ret == 1) && (curr_send_byte < apdu->lc)){
 			/* We had an ACK to send all our data */
 			if(apdu->lc != 0){
+				/* Wait in order to respect the 16 ETU guard time
+				 * specified by the EMV co specifications when switching direction
+				 */
+				SC_delay_EMV();
 				/* Send the remaining data in one block as asked by the smartcard */
 				for(i = curr_send_byte; i < apdu->lc; i++){
 					if(SC_putc_timeout(apdu->data[i], WT_wait_time)){
