@@ -1090,11 +1090,20 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		}
 	}
 	else{
-		/* Response is not fragmented: copy it in our upper layer APDU response */
-		resp->le = curr_resp.le;
-		resp->sw1 = curr_resp.sw1;
-		resp->sw2 = curr_resp.sw2;
-		memcpy(resp->data, curr_resp.data, curr_resp.le);
+                /* Response is not fragmented: copy it in our upper layer APDU response.
+                 * The exception is case 2S.3 when Na > Ne (see ISO7816-3:2006 12.2.3 page 36): in this
+                 * case the response data must be trimmed to the expected data.
+                 */
+                if(curr_resp.sw1 == 0x6c){
+                        /* Case 2S.3: trim response to Ne when Na > Ne */
+                        resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+                }
+                else{
+                        resp->le = curr_resp.le;
+                }
+                resp->sw1 = curr_resp.sw1;
+                resp->sw2 = curr_resp.sw2;
+                memcpy(resp->data, curr_resp.data, curr_resp.le);
 	}
 
 	return 0;
