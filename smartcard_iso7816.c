@@ -1209,9 +1209,9 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 	else{
 		/* Map the TPDU response to the APDU response */
 		resp->le = curr_resp.le;
-                resp->sw1 = curr_resp.sw1;
-                resp->sw2 = curr_resp.sw2;
-                memcpy(resp->data, curr_resp.data, curr_resp.le);
+    resp->sw1 = curr_resp.sw1;
+    resp->sw2 = curr_resp.sw2;
+    memcpy(resp->data, curr_resp.data, curr_resp.le);
 	}
 
 end:
