@@ -92,7 +92,6 @@ static uint8_t SC_inverse_conv(uint8_t c){
 	return res;
 }
 
-
 /* Wait a delay when switching direction in order to respect the EMV co Book1
  * specification.
  * "For the ICC or terminal, the minimum interval between the leading edges of the
@@ -974,6 +973,8 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 	SC_T0_APDU_resp curr_resp = { .data = { 0 }, .le = 0, .sw1 = 0, .sw2 = 0 };
 	/* Special case 4 APDU split with a GET_RESPONSE */
 	unsigned char case4_getresponse = 0;
+	/* Special case 2 APDU split with a GET_RESPONSE */
+	unsigned char case2_getresponse = 0;
 
 	if((apdu == NULL) || (resp == NULL)){
 		goto err;
@@ -1028,7 +1029,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				resp->sw1 = curr_resp.sw1;
 				resp->sw2 = curr_resp.sw2;
 				memcpy(resp->data, curr_resp.data, curr_resp.le);
-				return 0;
+				goto end;
 			}
 		}
 		/* From here, we continue to getting the answer from the card */
@@ -1066,27 +1067,84 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
 			goto err;
 		}
+		if((curr_resp.sw1 == 0x6c) && (apdu->send_le == 1) && (apdu->lc == 0)){
+			/* Handle case 2S.3 where we have a "wrong length". In this case we send the same command with the proper length */
+			curr_apdu.cla = apdu->cla;
+			curr_apdu.ins = apdu->ins;
+			curr_apdu.p1  = apdu->p1;
+			curr_apdu.p2  = apdu->p2;
+			curr_apdu.lc  = 0;
+			curr_apdu.le = curr_resp.sw2;
+			curr_apdu.send_le = 1;
+			curr_resp.sw1 = curr_resp.sw2 = curr_resp.le = 0;
+			if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
+				goto err;
+			}
+			resp->sw1 = curr_resp.sw1;
+			resp->sw2 = curr_resp.sw2;
+			/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
+			resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+			memcpy(resp->data, curr_resp.data, curr_resp.le);
+			goto end;
+		}
 	}
 	/* Handle the case 4 APDU using the GET_RESPONSE method */
 	if((apdu->send_le != 0) && (apdu->lc != 0)){
 		/* See page 36 in  ISO7816-3:2006 for the different cases */
 		if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)){
+			/* This is cases 4S.2 and 4E.1 (b) */
 			case4_getresponse = 1;
-			curr_resp.sw2 = apdu->le;
+			if(apdu->le > SHORT_APDU_LE_MAX){
+				/* Subcase 2 Ne > 256 of 4E.1 (b): P3 = '00' */
+				curr_resp.sw2 = 0;
+			}
+			else{
+				/* Subcase 1 Ne <= 256 of 4E.1 (b) */
+				curr_resp.sw2 = apdu->le;
+			}
 		}
 		if(curr_resp.sw1 == 0x61){
+			/* This is case 4E.1 (c): prepare possible chaining (handled in the next loop) */
 			case4_getresponse = 1;
 			/* Keep the SW2 as next Le to ask in the GET_RESPONSE */
 		}
 		/* Else: map TPDU response without any change */
 	}
+	/* Handle the case 2 extended APDU using the GET_RESPONSE method */
+	if((apdu->send_le != 0) && (apdu->lc == 0) && (apdu->le > SHORT_APDU_LE_MAX)){
+		if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00) && (curr_resp.le == SHORT_APDU_LE_MAX)){
+			/* This is case 2E.2 (c): return the 256 bytes with 0x9000 */
+			resp->sw1 = curr_resp.sw1;
+			resp->sw2 = curr_resp.sw2;
+			memcpy(resp->data, curr_resp.data, curr_resp.le);
+			goto end;
+		}
+		if(curr_resp.sw1 == 0x61){
+			/* This is case 2E.2 (d): prepare possible chaining (handled in the next loop) */
+			case2_getresponse = 1;
+			/* Keep the SW2 as next Le to ask in the GET_RESPONSE */
+		}
+	}
 	/* Get the response, possibly split across multiple responses */
-	if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && (apdu->le > SHORT_APDU_LE_MAX)) || (case4_getresponse == 1)){
+	if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && (apdu->le > SHORT_APDU_LE_MAX)) || (case4_getresponse == 1) || (case2_getresponse == 1)){
+		unsigned int num_get_response = 0;
+		unsigned char trim_response = 0;
 		resp->le = 0;
-		/* Zeroize our case 4 state */
-		case4_getresponse = 0;
 		while(1){
+			num_get_response++;
 			/* We have data to get with an ISO7816 GET_RESPONSE */
+			/* As described in case 2E.2 (d), we only ask for the amount of data
+			 * as per our initial APDU Le
+			 */
+			if(apdu->le < resp->le){
+				/* This should not happen, this is an error ... */
+				goto err;
+			}
+			if(curr_resp.sw2 > (apdu->le - resp->le)){
+				/* Trim the data we want to get */
+				trim_response = 1;
+				curr_resp.sw2 = (apdu->le - resp->le);
+			}
 			curr_apdu.cla = apdu->cla;
 			curr_apdu.ins = INS_GET_RESPONSE;
 			curr_apdu.p1  = 0;
@@ -1101,7 +1159,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 			/* Copy the data from the response */
 			resp->sw1 = curr_resp.sw1;
 			resp->sw2 = curr_resp.sw2;
-			if((curr_resp.sw1 == 0x61) || ((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00))){
+			if((curr_resp.sw1 == 0x61) || ((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)) || (trim_response == 1)){
 				/* We still agregate fragmented answers */
 				if((resp->le + curr_resp.le) > APDU_MAX_BUFF_LEN){
 					/* We have an overflow, this is an error */
@@ -1109,10 +1167,32 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				}
 				memcpy(&(resp->data[resp->le]), curr_resp.data, curr_resp.le);
 				resp->le += curr_resp.le;
-				if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)){
+				if(((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00)) || (trim_response == 1)){
 					/* This is the last packet without error, get out! */
 					break;
 				}
+			}
+			else if((curr_resp.sw1 == 0x6c) && (num_get_response == 1)){
+				/* If we got a "wrong length" for the first GET_RESPONSE, perform the same GET_RESPONSE with
+				 * proper length in SW2 and fallback to 2S.3
+				 */
+				curr_apdu.cla = apdu->cla;
+				curr_apdu.ins = INS_GET_RESPONSE;
+				curr_apdu.p1  = 0;
+				curr_apdu.p2  = 0;
+				curr_apdu.lc  = 0;
+				curr_apdu.le  = curr_resp.sw2;
+				curr_apdu.send_le = 1;
+				curr_resp.sw1 = curr_resp.sw2 = curr_resp.le = 0;
+				if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
+					goto err;
+				}
+				resp->sw1 = curr_resp.sw1;
+				resp->sw2 = curr_resp.sw2;
+				/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
+				resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+				memcpy(resp->data, curr_resp.data, resp->le);
+				goto end;
 			}
 			else{
 				/* Sanity check */
@@ -1127,21 +1207,17 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		}
 	}
 	else{
-                /* Response is not fragmented: copy it in our upper layer APDU response.
-                 * The exception is case 2S.3 when Na > Ne (see ISO7816-3:2006 12.2.3 page 36): in this
-                 * case the response data must be trimmed to the expected data.
-                 */
-                if(curr_resp.sw1 == 0x6c){
-                        /* Case 2S.3: trim response to Ne when Na > Ne */
-                        resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
-                }
-                else{
-                        resp->le = curr_resp.le;
-                }
-                resp->sw1 = curr_resp.sw1;
-                resp->sw2 = curr_resp.sw2;
-                memcpy(resp->data, curr_resp.data, curr_resp.le);
+		/* Map the TPDU response to the APDU response */
+		resp->le = curr_resp.le;
+    resp->sw1 = curr_resp.sw1;
+    resp->sw2 = curr_resp.sw2;
+    memcpy(resp->data, curr_resp.data, curr_resp.le);
 	}
+
+end:
+	/* Cleanup temporary local stuff */
+	memset(&curr_apdu, 0, sizeof(curr_apdu));
+	memset(&curr_resp, 0, sizeof(curr_resp));
 
 	return 0;
 err:
@@ -1930,11 +2006,19 @@ RECEIVE_TPDU_AGAIN_RESP:
 	resp->sw2 = resp->data[resp->le+1];
 	resp->data[resp->le] = resp->data[resp->le+1] = 0;
 
+	/* Cleanup temporary local stuff */
+	memset(&tpdu_send, 0, sizeof(SC_TPDU));
+	memset(&tpdu_rcv, 0, sizeof(SC_TPDU));
+	memset(buffer_send, 0, sizeof(buffer_send));
+	memset(buffer_recv, 0, sizeof(buffer_recv));
+
 	return 0;
 err:
 	/* We have an error, clean up stuff */
 	memset(&tpdu_send, 0, sizeof(SC_TPDU));
 	memset(&tpdu_rcv, 0, sizeof(SC_TPDU));
+	memset(buffer_send, 0, sizeof(buffer_send));
+	memset(buffer_recv, 0, sizeof(buffer_recv));
 	if(resp != NULL){
 		memset(resp, 0, sizeof(SC_APDU_resp));
 	}
