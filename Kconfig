@@ -1,7 +1,7 @@
 config USR_LIB_ISO7816
   bool  "iso7816-3 protocol stack (without platform dependencies)"
   default y
-  select USR_DRV_ISO7816
+  select USR_DRV_DRVISO7816
   ---help---
   Support for the iso7816-3 standard, excluding the platform
   specific interface, hosted in the dedicated iso7816 driver.
