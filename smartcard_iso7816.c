@@ -245,6 +245,10 @@ int SC_get_ATR(SC_ATR *atr){
 	curr_mask = (atr->t0) >> 4;
 	for(i = 0; i < SETUP_LENGTH; i++){
 		if(curr_mask & 0x1){
+			/* Should not happen but better safe than sorry ... */
+			if(i >= sizeof(atr->ta)){
+				goto err;
+			}
 		        if(SC_getc_timeout(&(atr->ta[i]), WT_wait_time)){
 		                goto err;
        			}
@@ -252,6 +256,10 @@ int SC_get_ATR(SC_ATR *atr){
 			checksum ^= atr->ta[i];
 		}
 		if(curr_mask & 0x2){
+			/* Should not happen but better safe than sorry ... */
+			if(i >= sizeof(atr->tb)){
+				goto err;
+			}
 		        if(SC_getc_timeout(&(atr->tb[i]), WT_wait_time)){
 		                goto err;
        			}
@@ -259,6 +267,10 @@ int SC_get_ATR(SC_ATR *atr){
 			checksum ^= atr->tb[i];
 		}
 		if(curr_mask & 0x4){
+			/* Should not happen but better safe than sorry ... */
+			if(i >= sizeof(atr->tc)){
+				goto err;
+			}
 		        if(SC_getc_timeout(&(atr->tc[i]), WT_wait_time)){
 		                goto err;
        			}
@@ -266,6 +278,10 @@ int SC_get_ATR(SC_ATR *atr){
 			checksum ^= atr->tc[i];
 		}
 		if(curr_mask & 0x8){
+			/* Should not happen but better safe than sorry ... */
+			if(i >= sizeof(atr->td)){
+				goto err;
+			}
 		        if(SC_getc_timeout(&(atr->td[i]), WT_wait_time)){
 		                goto err;
        			}
@@ -283,6 +299,13 @@ int SC_get_ATR(SC_ATR *atr){
 	/* Get the historical bytes */
 	atr->h_num = atr->t0 & 0x0f;
 	for(i = 0; i < atr->h_num; i++){
+		/* Check for overflow: should not happen but better 
+		 * safe than sorry
+		 */
+		if((i >= sizeof(atr->h)) || (atr->h_num > sizeof(atr->h))){
+			/* Overflow: get out! */
+			goto err;
+		}
 	        if(SC_getc_timeout(&(atr->h[i]), WT_wait_time)){
 	                goto err;
 		}
@@ -1209,9 +1232,9 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 	else{
 		/* Map the TPDU response to the APDU response */
 		resp->le = curr_resp.le;
-    resp->sw1 = curr_resp.sw1;
-    resp->sw2 = curr_resp.sw2;
-    memcpy(resp->data, curr_resp.data, curr_resp.le);
+		resp->sw1 = curr_resp.sw1;
+		resp->sw2 = curr_resp.sw2;
+		memcpy(resp->data, curr_resp.data, curr_resp.le);
 	}
 
 end:
@@ -1426,6 +1449,11 @@ static int SC_pull_TPDU_T1(SC_TPDU *tpdu, uint32_t resp_timeout){
 	/* Get the data */
 	if(tpdu->data != NULL){
 		for(i = 0; i < tpdu->len; i++){
+			/* Should not happen but better safe than sorry */
+			if((i >= TPDU_T1_DATA_MAXLEN) || (tpdu->len > TPDU_T1_DATA_MAXLEN)){
+				/* Overflow, get out */
+				goto err;
+			}
 			if(SC_getc_timeout(&(tpdu->data[i]), CWT_character_wait_time)){
 				goto err;
 			}
