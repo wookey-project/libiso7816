@@ -1106,7 +1106,9 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 			resp->sw1 = curr_resp.sw1;
 			resp->sw2 = curr_resp.sw2;
 			/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
-			resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+                        if(apdu->le != 0x00){ /* APDU le = 0x00 means Na = 256 */
+				resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+			}
 			memcpy(resp->data, curr_resp.data, curr_resp.le);
 			goto end;
 		}
@@ -1213,7 +1215,9 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				resp->sw1 = curr_resp.sw1;
 				resp->sw2 = curr_resp.sw2;
 				/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
-				resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+	                        if(apdu->le != 0x00){ /* APDU le = 0x00 means Na = 256 */
+					resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+				}
 				memcpy(resp->data, curr_resp.data, resp->le);
 				goto end;
 			}
