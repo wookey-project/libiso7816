@@ -1139,7 +1139,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		/* Else: map TPDU response without any change */
 	}
 	/* Handle the case 2 extended APDU using the GET_RESPONSE method */
-	if((apdu->send_le != 0) && (apdu->lc == 0) && (apdu->le > SHORT_APDU_LE_MAX)){
+        if((apdu->send_le != 0) && (apdu->lc == 0) && ((apdu->le > SHORT_APDU_LE_MAX) || (apdu->le == 0x00))){
 		if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00) && (curr_resp.le == SHORT_APDU_LE_MAX)){
 			/* This is case 2E.2 (c): return the 256 bytes with 0x9000 */
 			resp->sw1 = curr_resp.sw1;
@@ -1154,25 +1154,36 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		}
 	}
 	/* Get the response, possibly split across multiple responses */
-	if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && (apdu->le > SHORT_APDU_LE_MAX)) || (case4_getresponse == 1) || (case2_getresponse == 1)){
+        if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && ((apdu->le > SHORT_APDU_LE_MAX) || (apdu->le == 0x00))) || (case4_getresponse == 1) || (case2_getresponse == 1)){
 		unsigned int num_get_response = 0;
 		unsigned char trim_response = 0;
 		resp->le = 0;
+                /* Copy the first batch of data we had from the first 0x61 response */
+		if(curr_resp.le > APDU_MAX_BUFF_LEN){
+			/* We have an overflow, this is an error */
+			goto err;
+		}
+                local_memcpy(&(resp->data[0]), curr_resp.data, curr_resp.le);
+                resp->le += curr_resp.le;
 		while(1){
 			num_get_response++;
 			/* We have data to get with an ISO7816 GET_RESPONSE */
 			/* As described in case 2E.2 (d), we only ask for the amount of data
 			 * as per our initial APDU Le
 			 */
-			if(apdu->le < resp->le){
-				/* This should not happen, this is an error ... */
-				goto err;
-			}
-			if(curr_resp.sw2 > (apdu->le - resp->le)){
-				/* Trim the data we want to get */
-				trim_response = 1;
-				curr_resp.sw2 = (apdu->le - resp->le);
-			}
+                        if((apdu->le != 0x00) && (apdu->le < resp->le)){ /* 0x00 means maximum size */
+                                /* This should not happen, this is an error ... */
+                                goto err;
+                        }
+                        else{
+                                if(apdu->le != 0x00){
+                                        if(curr_resp.sw2 > (apdu->le - resp->le)){
+                                                /* Trim the data we want to get */
+                                                trim_response = 1;
+                                                curr_resp.sw2 = (apdu->le - resp->le);
+                                        }
+                                }
+                        }
 			curr_apdu.cla = apdu->cla;
 			curr_apdu.ins = INS_GET_RESPONSE;
 			curr_apdu.p1  = 0;
