@@ -97,7 +97,7 @@ static uint8_t SC_inverse_conv(uint8_t c){
  * "For the ICC or terminal, the minimum interval between the leading edges of the
  * start bits of the last character received and the first character sent in the
  * opposite direction shall be 16 etus."
- * 
+ *
  * We wait 4 ETUs since 12 ETUs has been spent receiving the last character received.
  */
 static inline uint32_t SC_get_delay_EMV(void){
@@ -299,7 +299,7 @@ int SC_get_ATR(SC_ATR *atr){
 	/* Get the historical bytes */
 	atr->h_num = atr->t0 & 0x0f;
 	for(i = 0; i < atr->h_num; i++){
-		/* Check for overflow: should not happen but better 
+		/* Check for overflow: should not happen but better
 		 * safe than sorry
 		 */
 		if((i >= sizeof(atr->h)) || (atr->h_num > sizeof(atr->h))){
@@ -1163,7 +1163,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 			/* We have an overflow, this is an error */
 			goto err;
 		}
-                local_memcpy(&(resp->data[0]), curr_resp.data, curr_resp.le);
+                memcpy(&(resp->data[0]), curr_resp.data, curr_resp.le);
                 resp->le += curr_resp.le;
 		while(1){
 			num_get_response++;
