@@ -1090,7 +1090,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
 			goto err;
 		}
-		if((curr_resp.sw1 == 0x6c) && (apdu->send_le == 1) && (apdu->lc == 0)){
+		if((curr_resp.sw1 == 0x6c) && (apdu->send_le != 0) && (apdu->lc == 0)){
 			/* Handle case 2S.3 where we have a "wrong length". In this case we send the same command with the proper length */
 			curr_apdu.cla = apdu->cla;
 			curr_apdu.ins = apdu->ins;
