@@ -204,6 +204,9 @@ int SC_get_ATR(SC_ATR *atr){
 		goto err;
 	}
 
+	/* Cleanup our lower layer */
+	platform_SC_flush();
+
 	/* Default values per standard */
 	atr->D_i_curr = 1;
 	atr->F_i_curr = SMARTCARD_DEFAULT_ETU;
@@ -394,6 +397,9 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 	if((atr == NULL) || (T_protocol == NULL)){
 		goto err;
 	}
+
+	/* Cleanup our lower layer */
+	platform_SC_flush();
 
 	/* Check TA2 to see if we cannot negotiate */
 	if(atr->t_mask[0] & (0x1 << 1)){
@@ -1177,7 +1183,11 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
                         }
                         else{
                                 if(apdu->le != 0x00){
-                                        if(curr_resp.sw2 > (apdu->le - resp->le)){
+                                        /* Sanity check */
+                                        if(apdu->le < resp->le){
+                                                goto err;
+                                        }
+                                        if(((curr_resp.sw2 == 0x00) && ((apdu->le - resp->le) < SHORT_APDU_LE_MAX)) || (curr_resp.sw2 > (apdu->le - resp->le))){ /* current response SW2 = 0x00 means max size */
                                                 /* Trim the data we want to get */
                                                 trim_response = 1;
                                                 curr_resp.sw2 = (apdu->le - resp->le);
