@@ -97,7 +97,7 @@ static uint8_t SC_inverse_conv(uint8_t c){
  * "For the ICC or terminal, the minimum interval between the leading edges of the
  * start bits of the last character received and the first character sent in the
  * opposite direction shall be 16 etus."
- * 
+ *
  * We wait 4 ETUs since 12 ETUs has been spent receiving the last character received.
  */
 static inline uint32_t SC_get_delay_EMV(void){
@@ -204,6 +204,9 @@ int SC_get_ATR(SC_ATR *atr){
 		goto err;
 	}
 
+	/* Cleanup our lower layer */
+	platform_SC_flush();
+
 	/* Default values per standard */
 	atr->D_i_curr = 1;
 	atr->F_i_curr = SMARTCARD_DEFAULT_ETU;
@@ -299,7 +302,7 @@ int SC_get_ATR(SC_ATR *atr){
 	/* Get the historical bytes */
 	atr->h_num = atr->t0 & 0x0f;
 	for(i = 0; i < atr->h_num; i++){
-		/* Check for overflow: should not happen but better 
+		/* Check for overflow: should not happen but better
 		 * safe than sorry
 		 */
 		if((i >= sizeof(atr->h)) || (atr->h_num > sizeof(atr->h))){
@@ -394,6 +397,9 @@ static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol, uint8_t do_negotia
 	if((atr == NULL) || (T_protocol == NULL)){
 		goto err;
 	}
+
+	/* Cleanup our lower layer */
+	platform_SC_flush();
 
 	/* Check TA2 to see if we cannot negotiate */
 	if(atr->t_mask[0] & (0x1 << 1)){
@@ -1090,7 +1096,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		if(SC_push_pull_APDU_T0(&curr_apdu, &curr_resp)){
 			goto err;
 		}
-		if((curr_resp.sw1 == 0x6c) && (apdu->send_le == 1) && (apdu->lc == 0)){
+		if((curr_resp.sw1 == 0x6c) && (apdu->send_le != 0) && (apdu->lc == 0)){
 			/* Handle case 2S.3 where we have a "wrong length". In this case we send the same command with the proper length */
 			curr_apdu.cla = apdu->cla;
 			curr_apdu.ins = apdu->ins;
@@ -1106,7 +1112,12 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 			resp->sw1 = curr_resp.sw1;
 			resp->sw2 = curr_resp.sw2;
 			/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
-			resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+                        if(apdu->le == 0x00){ /* APDU le = 0x00 means Na = 256 */
+				resp->le = curr_resp.le;
+			}
+			else{
+				resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+			}
 			memcpy(resp->data, curr_resp.data, curr_resp.le);
 			goto end;
 		}
@@ -1134,7 +1145,7 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		/* Else: map TPDU response without any change */
 	}
 	/* Handle the case 2 extended APDU using the GET_RESPONSE method */
-	if((apdu->send_le != 0) && (apdu->lc == 0) && (apdu->le > SHORT_APDU_LE_MAX)){
+        if((apdu->send_le != 0) && (apdu->lc == 0) && ((apdu->le > SHORT_APDU_LE_MAX) || (apdu->le == 0x00))){
 		if((curr_resp.sw1 == 0x90) && (curr_resp.sw2 == 0x00) && (curr_resp.le == SHORT_APDU_LE_MAX)){
 			/* This is case 2E.2 (c): return the 256 bytes with 0x9000 */
 			resp->sw1 = curr_resp.sw1;
@@ -1149,25 +1160,40 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 		}
 	}
 	/* Get the response, possibly split across multiple responses */
-	if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && (apdu->le > SHORT_APDU_LE_MAX)) || (case4_getresponse == 1) || (case2_getresponse == 1)){
+        if(((curr_resp.sw1 == 0x61) && (apdu->send_le != 0) && ((apdu->le > SHORT_APDU_LE_MAX) || (apdu->le == 0x00))) || (case4_getresponse == 1) || (case2_getresponse == 1)){
 		unsigned int num_get_response = 0;
 		unsigned char trim_response = 0;
 		resp->le = 0;
+                /* Copy the first batch of data we had from the first 0x61 response */
+		if(curr_resp.le > APDU_MAX_BUFF_LEN){
+			/* We have an overflow, this is an error */
+			goto err;
+		}
+                memcpy(&(resp->data[0]), curr_resp.data, curr_resp.le);
+                resp->le += curr_resp.le;
 		while(1){
 			num_get_response++;
 			/* We have data to get with an ISO7816 GET_RESPONSE */
 			/* As described in case 2E.2 (d), we only ask for the amount of data
 			 * as per our initial APDU Le
 			 */
-			if(apdu->le < resp->le){
-				/* This should not happen, this is an error ... */
-				goto err;
-			}
-			if(curr_resp.sw2 > (apdu->le - resp->le)){
-				/* Trim the data we want to get */
-				trim_response = 1;
-				curr_resp.sw2 = (apdu->le - resp->le);
-			}
+                        if((apdu->le != 0x00) && (apdu->le < resp->le)){ /* 0x00 means maximum size */
+                                /* This should not happen, this is an error ... */
+                                goto err;
+                        }
+                        else{
+                                if(apdu->le != 0x00){
+                                        /* Sanity check */
+                                        if(apdu->le < resp->le){
+                                                goto err;
+                                        }
+                                        if(((curr_resp.sw2 == 0x00) && ((apdu->le - resp->le) < SHORT_APDU_LE_MAX)) || (curr_resp.sw2 > (apdu->le - resp->le))){ /* current response SW2 = 0x00 means max size */
+                                                /* Trim the data we want to get */
+                                                trim_response = 1;
+                                                curr_resp.sw2 = (apdu->le - resp->le);
+                                        }
+                                }
+                        }
 			curr_apdu.cla = apdu->cla;
 			curr_apdu.ins = INS_GET_RESPONSE;
 			curr_apdu.p1  = 0;
@@ -1213,7 +1239,12 @@ static int SC_send_APDU_T0(SC_APDU_cmd *apdu, SC_APDU_resp *resp){
 				resp->sw1 = curr_resp.sw1;
 				resp->sw2 = curr_resp.sw2;
 				/* As explained in case 2S.3, when Na > Ne, we only keep the first Ne bytes */
-				resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+	                        if(apdu->le == 0x00){ /* APDU le = 0x00 means Na = 256 */
+					resp->le = curr_resp.le;
+				}
+				else{
+					resp->le = (curr_resp.le <= apdu->le) ? curr_resp.le : apdu->le;
+				}
 				memcpy(resp->data, curr_resp.data, resp->le);
 				goto end;
 			}
