@@ -2324,6 +2324,8 @@ SC_POWER_CARD_LABEL:
 			/* Lower the Vcc and RST pins */
 			platform_set_smartcard_vcc(0);
 			platform_set_smartcard_rst(0);
+			/* Wait a bit */
+			SC_delay_sc_clock_cycles(SC_RST_TIMEOUT);
 			/* Raise the Vcc pin */
 			platform_set_smartcard_vcc(1);
 			/* Wait for 40000 clock cycles to raise RST */
