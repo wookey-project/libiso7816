@@ -1,0 +1,2 @@
+directory	file	line	function	kind	name	#contexts	status	property
+.	smartcard_iso7816.c	89	SC_inverse_conv	Property	shift	14	Invalid or unreachable	0 ≤ (int)(~((int)c))

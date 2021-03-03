@@ -1,0 +1,319 @@
+[wp:pedantic-assigns] warning: WP uses \from to generate precise hypotheses, however their proof is not supported yet
+smartcard_iso7816.c:369:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:364:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:359:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:354:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:349:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:219:[wp] warning: calculus failed on strategy
+for 'SC_iso7816_fsm_init', behavior 'default!', properties -@lemma, both assigns or not
+because unsupported non natural loop(s) (abort)
+smartcard_iso7816.c:304:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:249:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:216:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:2120:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:40:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:88:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:126:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:165:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:583:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:577:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:467:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:774:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:735:[wp] warning: calculus failed on strategy
+for 'SC_pull_RESP_T0', behavior 'default!', properties -@lemma, both assigns or not
+because unsupported strange loop(s). (abort)
+smartcard_iso7816.c:958:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:933:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1282:[wp] warning: Cast with incompatible pointers types (source: __anonstruct_SC_APDU_resp_11*)
+   (target: sint8*)
+smartcard_iso7816.c:1280:[wp] warning: Cast with incompatible pointers types
+   (source: __anonstruct_SC_T0_APDU_resp_14*) (target: sint8*)
+smartcard_iso7816.c:1279:[wp] warning: Cast with incompatible pointers types
+   (source: __anonstruct_SC_T0_APDU_cmd_13*) (target: sint8*)
+smartcard_iso7816.c:1274:[wp] warning: Cast with incompatible pointers types
+   (source: __anonstruct_SC_T0_APDU_resp_14*) (target: sint8*)
+smartcard_iso7816.c:1273:[wp] warning: Cast with incompatible pointers types
+   (source: __anonstruct_SC_T0_APDU_cmd_13*) (target: sint8*)
+smartcard_iso7816.c:1060:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1060:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1153:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1153:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1217:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1217:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1248:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1248:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1258:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1258:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1174:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1172:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1172:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1268:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1268:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1034:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1121:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1121:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1094:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1094:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:1300:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1338:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1337:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1336:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1335:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1334:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1426:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:1482:[wp] warning: Missing assigns clause (assigns 'everything' instead)
+smartcard_iso7816.c:2082:[wp] warning: Cast with incompatible pointers types (source: __anonstruct_SC_APDU_resp_11*)
+   (target: sint8*)
+smartcard_iso7816.c:2080:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:2079:[wp] warning: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+smartcard_iso7816.c:2078:[wp] warning: Cast with incompatible pointers types (source: __anonstruct_SC_TPDU_15*)
+   (target: sint8*)
+smartcard_iso7816.c:2077:[wp] warning: Cast with incompatible pointers types (source: __anonstruct_SC_TPDU_15*)
+   (target: sint8*)
+smartcard_iso7816.c:1853:[wp] warning: calculus failed on strategy
+for 'SC_send_APDU_T1', behavior 'default!', properties -@lemma, both assigns or not
+because unsupported strange loop(s). (abort)
+[wp] 93 goals scheduled
+[wp] Proved goals:   93 / 93
+Qed:              49  (0.07ms-835ms-20.0s)
+Alt-Ergo 2.3.3:   44  (7ms-1.9s-2s) (39)
+CVC4 1.7:         41  (2s)
+Z3 4.8.6:         41  (2s)
+[wp] Updated session with 3 new valid scripts.
+[wp] Updated session with 41 new scripts to complete.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/smartcard/api/libsmartcard.h:109:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_APDU_get_encapsulated_apdu_size'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/smartcard/api/libsmartcard.h:109:[wp] warning: Memory model hypotheses for function 'SC_APDU_get_encapsulated_apdu_size':
+/*@
+   behavior wp_typed_ref:
+     requires \separated(apdu, out_apdu_lc_size, out_apdu_le_size);
+     requires \valid(apdu);
+     requires \valid(out_apdu_lc_size);
+     requires \valid(out_apdu_le_size);
+   */
+unsigned int SC_APDU_get_encapsulated_apdu_size(SC_APDU_cmd *apdu,
+                                                unsigned int *out_apdu_lc_size,
+                                                unsigned int *out_apdu_le_size);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/smartcard/api/libsmartcard.h:110:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_APDU_prepare_buffer'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/smartcard/api/libsmartcard.h:110:[wp] warning: Memory model hypotheses for function 'SC_APDU_prepare_buffer':
+/*@
+   behavior wp_typed_ref:
+     requires \separated(apdu, ret, buffer + (..));
+     requires \valid(apdu);
+     requires \valid(ret);
+   */
+uint8_t SC_APDU_prepare_buffer(SC_APDU_cmd *apdu, uint8_t *buffer,
+                               unsigned int i, uint8_t block_size, int *ret);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/smartcard/api/libsmartcard.h:115:[wp] warning: Memory model hypotheses for function 'SC_fsm_init':
+/*@ behavior wp_typed_ref:
+      requires \valid(card); */
+int SC_fsm_init(SC_Card *card, uint8_t do_negotiate_pts,
+                uint8_t do_change_baudrate, uint8_t do_force_protocol,
+                uint32_t do_force_etu);
+smartcard_iso7816.c:339:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_iso7816_print_ATR'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:2229:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_iso7816_fsm_early_init'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:2270:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_iso7816_smartcard_lost'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:2275:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_iso7816_is_smartcard_inserted'.
+Callers assumptions might be imprecise.
+framac/entrypoint.c:73:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'test_fcn_iso7816'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//drivers/socs/stm32f439/drviso7816/api/libdrviso7816.h:70:[wp] warning: Memory model hypotheses for function 'platform_SC_adapt_clocks':
+/*@
+   behavior wp_typed_ref:
+     requires \separated(etu, frequency);
+     requires \valid(etu);
+     requires \valid(frequency);
+   */
+int platform_SC_adapt_clocks(uint32_t *etu, uint32_t *frequency);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//drivers/socs/stm32f439/drviso7816/api/libdrviso7816.h:104:[wp] warning: Memory model hypotheses for function 'platform_SC_getc':
+/*@ behavior wp_typed_ref:
+      requires \valid(c); */
+int platform_SC_getc(uint8_t *c, uint32_t timeout, uint8_t reset);
+smartcard_iso7816.c:199:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_get_ATR'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:2091:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_print_TPDU'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:80:[wp] warning: Memory model hypotheses for function 'get_reg_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static uint32_t get_reg_value(uint32_t const volatile *reg, uint32_t mask,
+                              uint8_t pos);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:121:[wp] warning: Memory model hypotheses for function 'set_reg_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static int8_t set_reg_value(register_t reg, uint32_t value, uint32_t mask,
+                            uint8_t pos);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:200:[wp] warning: Memory model hypotheses for function 'read_reg_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static uint32_t read_reg_value(register_t reg);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:205:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'read_reg16_value'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:205:[wp] warning: Memory model hypotheses for function 'read_reg16_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static uint16_t read_reg16_value(uint16_t volatile *reg);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:216:[wp] warning: Memory model hypotheses for function 'write_reg_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static void write_reg_value(register_t reg, uint32_t value);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:221:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'write_reg16_value'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:221:[wp] warning: Memory model hypotheses for function 'write_reg16_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static void write_reg16_value(uint16_t volatile *reg, uint16_t value);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:231:[wp] warning: Memory model hypotheses for function 'set_reg_bits':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static void set_reg_bits(register_t reg, uint32_t value);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:245:[wp] warning: Memory model hypotheses for function 'clear_reg_bits':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+static void clear_reg_bits(register_t reg, uint32_t value);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:89:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'get_reg16_value'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:89:[wp] warning: Memory model hypotheses for function 'get_reg16_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+__inline static uint16_t get_reg16_value(uint16_t volatile *reg,
+                                         uint16_t mask, uint8_t pos);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:175:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'set_reg16_value'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:175:[wp] warning: Memory model hypotheses for function 'set_reg16_value':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+__inline static int8_t set_reg16_value(uint16_t volatile *reg,
+                                       uint16_t value, uint16_t mask,
+                                       uint8_t pos);
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:236:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'set_reg16_bits'.
+Callers assumptions might be imprecise.
+/home/phil/Travail/Wookey/soft/gitlab/newusb//libs/std/api/libc/regutils.h:236:[wp] warning: Memory model hypotheses for function 'set_reg16_bits':
+/*@ behavior wp_typed_ref:
+      requires \valid(reg); */
+__inline static void set_reg16_bits(uint16_t volatile *reg, uint16_t value);
+smartcard_iso7816.c:10:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_get_sc_clock_freq'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:16:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_get_sc_etu'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:21:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_delay_sc_clock_cycles'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:48:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_delay_etu'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:61:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_is_inverse_conv'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:70:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_set_direct_conv'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:77:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_set_inverse_conv'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:84:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_inverse_conv'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:103:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_get_delay_EMV'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:106:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_delay_EMV'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:112:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_getc_timeout'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:112:[wp] warning: Memory model hypotheses for function 'SC_getc_timeout':
+/*@ behavior wp_typed_ref:
+      requires \valid(c); */
+static int SC_getc_timeout(uint8_t *c, uint32_t etu_timeout);
+smartcard_iso7816.c:147:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_putc_timeout'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:183:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_adapt_clocks'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:388:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_negotiate_PTS'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:388:[wp] warning: Memory model hypotheses for function 'SC_negotiate_PTS':
+/*@
+   behavior wp_typed_ref:
+     requires
+       \separated(
+         T_protocol + (..), (uint32_t const *)F_i_0 + (..),
+         (uint32_t const *)f_max_0 + (..), (uint32_t const *)D_i_0 + (..),
+         &GT_receive_send_interval_etu
+         );
+     requires
+       \separated(
+         atr + (..), (uint32_t const *)F_i_0 + (..),
+         (uint32_t const *)f_max_0 + (..), (uint32_t const *)D_i_0 + (..),
+         &GT_receive_send_interval_etu
+         );
+   */
+static int SC_negotiate_PTS(SC_ATR *atr, uint8_t *T_protocol,
+                            uint8_t do_negotiate_pts,
+                            uint8_t do_change_baud_rate,
+                            uint8_t do_force_protocol, uint32_t do_force_etu);
+smartcard_iso7816.c:715:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_pull_RESP_T0'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:847:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_push_pull_APDU_T0'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:847:[wp] warning: Memory model hypotheses for function 'SC_push_pull_APDU_T0':
+/*@
+   behavior wp_typed_ref:
+     requires \separated(apdu + (..), &GT_receive_send_interval_etu);
+     requires \separated(resp + (..), &GT_receive_send_interval_etu);
+   */
+static int SC_push_pull_APDU_T0(SC_T0_APDU_cmd *apdu, SC_T0_APDU_resp *resp);
+smartcard_iso7816.c:1000:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_send_APDU_T0'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1289:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_lrc'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1325:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_crc'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1348:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_checksum_compute'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1376:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_checksum_check'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1400:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_push_TPDU_T1'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1456:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_pull_TPDU_T1'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1519:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_is_IBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1526:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_is_RBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1533:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_is_SBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1540:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_set_IBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1548:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_set_RBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1556:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_set_SBLOCK'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1564:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_get_sequence'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1580:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_is_sequence_ok'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1585:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_set_sequence'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1602:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_RBLOCK_get_error'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1614:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_send_error'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1642:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_SBLOCK_get_type'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1656:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_SBLOCK_get_waiting_time'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1680:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_SBLOCK_get_new_ifs'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1704:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_TPDU_T1_send_sblock'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1741:[wp:pedantic-assigns] warning: No 'assigns' specification for function 'SC_send_APDU_T1'.
+Callers assumptions might be imprecise.
+smartcard_iso7816.c:1853:[wp] warning: calculus failed on strategy
+for 'SC_iso7816_fsm_init', behavior 'default!', properties @lemma, both assigns or not
+because unsupported non natural loop(s) (abort)
+smartcard_iso7816.c:735:[wp] warning: calculus failed on strategy
+for 'SC_pull_RESP_T0', behavior 'default!', properties @lemma, both assigns or not
+because unsupported strange loop(s). (abort)
+smartcard_iso7816.c:1853:[wp] warning: calculus failed on strategy
+for 'SC_send_APDU_T1', behavior 'default!', properties @lemma, both assigns or not
+because unsupported strange loop(s). (abort)
+[wp] 41 goals scheduled
+[wp] Proved goals:   41 / 41
+[wp] No updated script.
