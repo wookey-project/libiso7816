@@ -1888,6 +1888,8 @@ RECEIVE_TPDU_AGAIN_CMD:
 					log_printf("[Smartcard T=1] Unexpected case: received other block than expected RBLOCK, or bad sequence number ...\n");
 					goto err;
 				}
+				/* Wait for BGT as we will send the next block after looping */
+				SC_delay_etu(BGT_block_guard_time); /* Wait for the standardized Block Guard Time (22 ETU by default) */
 			}
 			else{
 				/* This is the last block, we should receive at least one I type block with a last I Block received sequence + 1 value
